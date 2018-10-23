@@ -133,6 +133,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     initializeCircumvention();
     initializeRingRtc();
     initializePendingMessages();
+    initializeMeshManager();
     initializeUnidentifiedDeliveryAbilityRefresh();
     initializeBlobProvider();
     initializeCameraX();
@@ -363,6 +364,10 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
       }
       TextSecurePreferences.setNeedsMessagePull(this, false);
     }
+  }
+
+  private void initializeMeshManager() {
+    GTMeshManager.getInstance().initToken(this);
   }
 
   private void initializeUnidentifiedDeliveryAbilityRefresh() {
