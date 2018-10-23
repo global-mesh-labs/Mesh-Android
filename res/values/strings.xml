@@ -1204,6 +1204,7 @@
     <string name="preferences_chats__message_text_size">Message font size</string>
     <string name="preferences_events__contact_joined_signal">Contact joined Signal</string>
     <string name="preferences_notifications__priority">Priority</string>
+    <string name="preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh">Signal needs Bluetooth permissions to connect to a mesh device</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -1289,6 +1290,7 @@
     <string name="conversation_group_options__broadcast">Broadcast</string>
 
     <!-- text_secure_normal -->
+    <string name="text_secure_normal__menu_new_message">New message</string>
     <string name="text_secure_normal__menu_new_group">New group</string>
     <string name="text_secure_normal__menu_settings">Settings</string>
     <string name="text_secure_normal__menu_clear_passphrase">Lock</string>

@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath files('libs/gradle-witness.jar')
     }
 }
@@ -148,6 +148,9 @@ dependencies {
         exclude group: 'org.hamcrest',        module: 'hamcrest-core'
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+
+    implementation project(':gotenna-public-sdk'){
+    }
 }
 
 dependencyVerification {
@@ -282,7 +285,7 @@ android {
         versionCode 418
         versionName "4.29.4"
 
-        minSdkVersion 14
+        minSdkVersion 18
         targetSdkVersion 26
         multiDexEnabled true
 
