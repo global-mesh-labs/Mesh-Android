@@ -188,6 +188,9 @@ dependencies {
     }
     testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation 'org.robolectric:shadows-multidex:4.2'
+
+    implementation project(':gotenna-public-sdk'){
+    }
 }
 
 dependencyVerification {

@@ -80,6 +80,7 @@ import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWra
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
+import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 
 import java.security.Security;
 import java.util.HashSet;
@@ -135,6 +136,7 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
     initializeUnidentifiedDeliveryAbilityRefresh();
     initializeBlobProvider();
     initializeCameraX();
+    initializeMeshManager();
     NotificationChannels.create(this);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -394,5 +396,9 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
   }
 
   private static class ProviderInitializationException extends RuntimeException {
+  }
+  
+  private void initializeMeshManager() {
+    GTMeshManager.getInstance().initToken(this);
   }
 }

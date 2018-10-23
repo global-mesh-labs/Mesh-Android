@@ -17,6 +17,9 @@
  */
 package org.thoughtcrime.securesms;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
@@ -30,6 +33,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 
+import com.gotenna.sdk.GoTenna;
+import com.gotenna.sdk.commands.GTCommandCenter;
+import com.gotenna.sdk.commands.GTError;
+import com.gotenna.sdk.interfaces.GTErrorListener;
+
+import org.thoughtcrime.securesms.database.Address;
+import org.thoughtcrime.securesms.database.MessagingDatabase;
+import org.thoughtcrime.securesms.logging.Log;
+import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
+import org.thoughtcrime.securesms.mesh.models.Message;
+import org.thoughtcrime.securesms.notifications.MessageNotifier;
+import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.preferences.AdvancedPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.AppProtectionPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.AppearancePreferenceFragment;
@@ -43,6 +58,7 @@ import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ThemeUtil;
+import org.whispersystems.libsignal.util.guava.Optional;
 
 /**
  * The Activity for application preference display and management.
@@ -52,7 +68,7 @@ import org.thoughtcrime.securesms.util.ThemeUtil;
  */
 
 public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarActivity
-    implements SharedPreferences.OnSharedPreferenceChangeListener
+    implements SharedPreferences.OnSharedPreferenceChangeListener, GTMeshManager.IncomingMessageListener
 {
   @SuppressWarnings("unused")
   private static final String TAG = ApplicationPreferencesActivity.class.getSimpleName();
@@ -85,6 +101,41 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     } else if (icicle == null) {
       initFragment(android.R.id.content, new ApplicationPreferenceFragment());
     }
+
+    // TODO: move this code to new 'Mesh' preference fragment
+    // connect to bluetooth mesh device
+    Permissions.with(this)
+            .request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH)
+            .ifNecessary()
+            .withPermanentDenialDialog(this.getString(R.string.preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh))
+            .onAnyResult(() -> {
+                if(GoTenna.tokenIsVerified()) {
+                  final Address localAddress = Address.fromSerialized(TextSecurePreferences.getLocalNumber(this));
+                  final String  profileName  = TextSecurePreferences.getProfileName(this);
+                  String phoneNumber = localAddress.toString().replaceAll("[^0-9]", "");
+                  long theGID =  Long.parseLong(phoneNumber);
+
+                  // set new random GID every time we recreate the main activity
+                  GTCommandCenter.getInstance().setGoTennaGID(theGID, profileName, new GTErrorListener() {
+                    @Override
+                    public void onError(GTError error) {
+                      android.util.Log.d("GTMeshManager", error.toString() + "," + error.getCode());
+                    }
+                  });
+                  GTMeshManager gtMeshManager = GTMeshManager.getInstance();
+
+                  // if NOT already paired, try to connect to a goTenna
+                  if (!gtMeshManager.getInstance().isPaired()) {
+                    gtMeshManager.connect();
+
+                    // set the geoloc region
+                    int region = 2; // PrefsUtil.getInstance(MainActivity.this).getValue(PrefsUtil.REGION, 0);
+                    gtMeshManager.setGeoloc(region);
+                    gtMeshManager.addIncomingMessageListener(this);
+                  }
+                }
+            })
+            .execute();
   }
 
   @Override
@@ -100,6 +151,16 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     super.onActivityResult(requestCode, resultCode, data);
     Fragment fragment = getSupportFragmentManager().findFragmentById(android.R.id.content);
     fragment.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  public void onIncomingMessage(Message incomingMessage)  {
+    Optional<MessagingDatabase.InsertResult> insertResult = GTMeshManager.getInstance().storeMessage(incomingMessage);
+    if (insertResult.isPresent()) {
+      MessageNotifier.updateNotification(this, insertResult.get().getThreadId());
+    } else {
+      Log.w(TAG, "*** Failed to insert mesh message!");
+    }
   }
 
   @Override

@@ -1398,6 +1398,7 @@
     <string name="preferences_communication__sealed_sender_allow_from_anyone">Allow from anyone</string>
     <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.</string>
     <string name="preferences_communication__sealed_sender_learn_more">Learn more</string>
+    <string name="preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh">Signal needs Bluetooth permissions to connect to a mesh device</string>
 
     <!-- **************************************** -->
     <!-- menus -->
@@ -1486,6 +1487,7 @@
     <string name="conversation_group_options__broadcast">Broadcast</string>
 
     <!-- text_secure_normal -->
+    <string name="text_secure_normal__menu_new_message">New message</string>
     <string name="text_secure_normal__menu_new_group">New group</string>
     <string name="text_secure_normal__menu_settings">Settings</string>
     <string name="text_secure_normal__menu_clear_passphrase">Lock</string>
