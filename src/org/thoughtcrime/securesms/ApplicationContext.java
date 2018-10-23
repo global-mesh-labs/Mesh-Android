@@ -62,6 +62,7 @@ import org.webrtc.PeerConnectionFactory.InitializationOptions;
 import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
+import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -116,6 +117,7 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
     initializeCircumvention();
     initializeWebRtc();
     initializePendingMessages();
+    initializeMeshManager();
     initializeUnidentifiedDeliveryAbilityRefresh();
     NotificationChannels.create(this);
     ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
@@ -304,6 +306,10 @@ public class ApplicationContext extends MultiDexApplication implements Dependenc
       ApplicationContext.getInstance(this).getJobManager().add(new PushNotificationReceiveJob(this));
       TextSecurePreferences.setNeedsMessagePull(this, false);
     }
+  }
+
+  private void initializeMeshManager() {
+    GTMeshManager.getInstance().initToken(this);
   }
 
   private void initializeUnidentifiedDeliveryAbilityRefresh() {
