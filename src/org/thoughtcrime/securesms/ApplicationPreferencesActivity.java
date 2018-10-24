@@ -112,10 +112,9 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
             .withPermanentDenialDialog(this.getString(R.string.preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh))
             .onAnyResult(() -> {
                 if(GoTenna.tokenIsVerified()) {
-                  final Address localAddress = Address.fromSerialized(TextSecurePreferences.getLocalNumber(this));
+                  final Address localNumber = Address.fromSerialized(TextSecurePreferences.getLocalNumber(this));
                   final String  profileName  = TextSecurePreferences.getProfileName(this);
-                  String phoneNumber = localAddress.toString().replaceAll("[^0-9]", "");
-                  long theGID =  Long.parseLong(phoneNumber);
+                  long theGID = GTMeshManager.getGidFromPhoneNumber(localNumber.toString());
 
                   // set new random GID every time we recreate the main activity
                   GTCommandCenter.getInstance().setGoTennaGID(theGID, profileName, new GTErrorListener() {

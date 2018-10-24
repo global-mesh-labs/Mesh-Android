@@ -25,7 +25,9 @@ import com.gotenna.sdk.messages.GTMessageData;
 import com.gotenna.sdk.messages.GTTextOnlyMessageData;
 import com.gotenna.sdk.responses.GTResponse;
 import com.gotenna.sdk.types.GTDataTypes;
+import com.gotenna.sdk.utils.Utils;
 
+import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
@@ -41,16 +43,19 @@ import org.whispersystems.signalservice.api.messages.SignalServiceGroup;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.telephony.SmsMessage;
+
+import static android.telephony.SmsMessage.getSubmitPdu;
+
 /**
  * A singleton that manages listening for incoming messages from the SDK and parses them into
  * usable data classes.
  * <p>
  * Created on 2/10/16
- * Modified on 10/20/2018
  *
- * @author ThomasColligan, RichardMyers
+ * @author ThomasColligan
  */
-public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTCommand.GTCommandResponseListener, GTErrorListener
+public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTConnectionManager.GTConnectionListener, GTCommand.GTCommandResponseListener, GTErrorListener
 {
     //==============================================================================================
     // Class Properties
@@ -61,6 +66,9 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     private static final String TAG = GTMeshManager.class.getSimpleName();
 
     private GTConnectionManager gtConnectionManager = null;
+    private static final int SCAN_TIMEOUT = 25000; // 25 seconds
+
+     private Handler handler;
     // private NetworkingActivity callbackActivity;
 
     // set in ConversationActivity
@@ -68,6 +76,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     private boolean isDefaultSms          = false;
     private boolean isSecurityInitialized = true;
     private Recipient recipient;
+    private String connectedAddress;
 
     private final ArrayList<IncomingMessageListener> incomingMessageListeners;
 
@@ -106,10 +115,20 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         try {
             GoTenna.setApplicationToken(context.getApplicationContext(), GOTENNA_APP_TOKEN);
             if(GoTenna.tokenIsVerified())    {
-                Log.d(TAG, "goTenna token is verified:" + GoTenna.tokenIsVerified());
+                Log.d("GTMeshManager", "goTenna token is verified:" + GoTenna.tokenIsVerified());
             }
             gtConnectionManager = GTConnectionManager.getInstance();
             startListening();
+
+            handler = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(android.os.Message msg){
+                    if(msg.what == 0) {
+                        // no connection, scanning timed out
+                        connectedAddress = "";
+                    }
+                }
+            };
         }
         catch(GTInvalidAppTokenException e) {
             e.printStackTrace();
@@ -232,22 +251,43 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         return false;
     }
 
-    public void setGeoloc(Place place){
-        GTCommandCenter.getInstance().sendSetGeoRegion(place, new GTCommand.GTCommandResponseListener() {
-            @Override
-            public void onResponse(GTResponse response) {
-                if (response.getResponseCode() == GTDataTypes.GTCommandResponseCode.POSITIVE) {
-                    Log.d(TAG, "Region set OK");
-                } else {
-                    Log.d(TAG, "Region set:" + response.toString());
+    public void setGeoloc(int region){
+        Place place = null;
+        switch(region)    {
+            case 1:
+                place = Place.EUROPE;
+                break;
+            case 2:
+                place = Place.AUSTRALIA;
+                break;
+            case 3:
+                place = Place.NEW_ZEALAND;
+                break;
+            case 4:
+                place = Place.SINGAPORE;
+                break;
+            default:
+                place = Place.NORTH_AMERICA;
+                break;
+        }
+
+        if (isPaired()) {
+            GTCommandCenter.getInstance().sendSetGeoRegion(place, new GTCommand.GTCommandResponseListener() {
+                @Override
+                public void onResponse(GTResponse response) {
+                    if (response.getResponseCode() == GTDataTypes.GTCommandResponseCode.POSITIVE) {
+                        Log.d("GTMeshManager", "Region set OK");
+                    } else {
+                        Log.d("GTMeshManager", "Region set:" + response.toString());
+                    }
                 }
-            }
-        }, new GTErrorListener() {
-            @Override
-            public void onError(GTError error) {
-                Log.d(TAG, error.toString() + "," + error.getCode());
-            }
-        });
+            }, new GTErrorListener() {
+                @Override
+                public void onError(GTError error) {
+                    Log.d("GTMeshManager", error.toString() + "," + error.getCode());
+                }
+            });
+        }
     }
 
     private boolean hasBluetoothPermisson() {
@@ -258,28 +298,60 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         return ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void disconnect(GTConnectionManager.GTConnectionListener listener) {
-        if (listener != null) {
-            gtConnectionManager.addGtConnectionListener(listener);
-        }
+    public void disconnect() {
+        gtConnectionManager.addGtConnectionListener(this);
         gtConnectionManager.disconnect();
     }
 
-    public void connect(GTConnectionManager.GTConnectionListener listener) {
+    public void connect() {
 
         if(hasBluetoothPermisson() && hasLocationpermission()) {
-            if (listener != null) {
-                gtConnectionManager.addGtConnectionListener(listener);
-            }
+            gtConnectionManager.addGtConnectionListener(this);
             gtConnectionManager.clearConnectedGotennaAddress();
             gtConnectionManager.scanAndConnect(GTConnectionManager.GTDeviceType.MESH);
+            handler.postDelayed(scanTimeoutRunnable, SCAN_TIMEOUT);
         }
     }
 
     @Override
+    public void onConnectionStateUpdated(GTConnectionManager.GTConnectionState gtConnectionState) {
+        switch (gtConnectionState) {
+            case CONNECTED: {
+                connectedAddress = gtConnectionManager.getConnectedGotennaAddress();
+                Log.d("GTMeshManager", "existing connected address:" + connectedAddress);
+            }
+            break;
+            case DISCONNECTED: {
+                Log.d("GTMeshManager", "no connection");
+                connectedAddress = "";
+            }
+            break;
+            case SCANNING: {
+                Log.d("GTMeshManager", "scanning for connection");
+            }
+            break;
+        }
+        if (gtConnectionState != GTConnectionManager.GTConnectionState.SCANNING) {
+            gtConnectionManager.removeGtConnectionListener(this);
+            handler.removeCallbacks(scanTimeoutRunnable);
+            connectedAddress = "";
+        }
+    }
+
+    private final Runnable scanTimeoutRunnable = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            handler.removeCallbacks(scanTimeoutRunnable);
+            handler.sendEmptyMessage(0);
+        }
+    };
+
+    @Override
     public void onResponse(final GTResponse gtResponse) {
 
-        Log.d(TAG, "onResponse: " + gtResponse.toString());
+        Log.d("GTMeshManager", "onResponse: " + gtResponse.toString());
         try {
             if (gtResponse.getResponseCode() == GTDataTypes.GTCommandResponseCode.POSITIVE) {
                 gtSentIntent.send(Activity.RESULT_OK); // Sent!
@@ -301,7 +373,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
     @Override
     public void onError(GTError gtError){
-        Log.d(TAG, "onError: " + gtError.toString());
+        Log.d("GTMeshManager", "onError: " + gtError.toString());
         if (gtDeliveryIntent != null) {
             try {
                 // TODO: map responses properly to intent parsing
@@ -334,7 +406,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         GTCommandCenter.getInstance().sendMessage(gtMessage.toBytes(), receiverGID,
                 this, this,
-                true);
+                false);
 
         gtSentIntent = sentIntent;
         gtDeliveryIntent = deliveryIntent;
