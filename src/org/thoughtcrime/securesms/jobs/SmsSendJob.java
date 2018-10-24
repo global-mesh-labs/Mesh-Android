@@ -18,6 +18,7 @@ import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.NoSuchMessageException;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
+import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.SmsDeliveryListener;
@@ -135,30 +136,48 @@ public class SmsSendJob extends SendJob {
     ArrayList<PendingIntent> sentIntents      = constructSentIntents(message.getId(), message.getType(), messages, false);
     ArrayList<PendingIntent> deliveredIntents = constructDeliveredIntents(message.getId(), message.getType(), messages);
 
-    // NOTE 11/04/14 -- There's apparently a bug where for some unknown recipients
-    // and messages, this will throw an NPE.  We have no idea why, so we're just
-    // catching it and marking the message as a failure.  That way at least it doesn't
-    // repeatedly crash every time you start the app.
-    try {
-      getSmsManagerFor(message.getSubscriptionId()).sendMultipartTextMessage(recipient, null, messages, sentIntents, deliveredIntents);
-    } catch (NullPointerException | IllegalArgumentException npe) {
-      warn(TAG, npe);
-      log(TAG, "Recipient: " + recipient);
-      log(TAG, "Message Parts: " + messages.size());
+    if (GTMeshManager.getInstance().isPaired()) {
+      // send first message over the mesh
+      // TODO: send all message parts, not just first one
 
-      try {
-        for (int i=0;i<messages.size();i++) {
-          getSmsManagerFor(message.getSubscriptionId()).sendTextMessage(recipient, null, messages.get(i),
-                                                                        sentIntents.get(i),
-                                                                        deliveredIntents == null ? null : deliveredIntents.get(i));
-        }
-      } catch (NullPointerException | IllegalArgumentException npe2) {
-        warn(TAG, npe);
-        throw new UndeliverableMessageException(npe2);
+      // TODO: handle delivery intent for mesh messages (create a new message.type?)
+      if (deliveredIntents == null) {
+        deliveredIntents = new ArrayList<>(1);
+        deliveredIntents.add(PendingIntent.getBroadcast(context, 0,
+                constructDeliveredIntent(context, message.getId(), message.getType()),
+                0));
       }
-    } catch (SecurityException se) {
-      warn(TAG, se);
-      throw new UndeliverableMessageException(se);
+
+      GTMeshManager.getInstance().sendTextMessageInternal(recipient, null, message.getBody(),
+              sentIntents.get(0),
+              deliveredIntents == null ? null : deliveredIntents.get(0), true);
+    }
+    else {
+      // NOTE 11/04/14 -- There's apparently a bug where for some unknown recipients
+      // and messages, this will throw an NPE.  We have no idea why, so we're just
+      // catching it and marking the message as a failure.  That way at least it doesn't
+      // repeatedly crash every time you start the app.
+      try {
+        getSmsManagerFor(message.getSubscriptionId()).sendMultipartTextMessage(recipient, null, messages, sentIntents, deliveredIntents);
+      } catch (NullPointerException | IllegalArgumentException npe) {
+        warn(TAG, npe);
+        log(TAG, "Recipient: " + recipient);
+        log(TAG, "Message Parts: " + messages.size());
+
+        try {
+          for (int i = 0; i < messages.size(); i++) {
+            getSmsManagerFor(message.getSubscriptionId()).sendTextMessage(recipient, null, messages.get(i),
+                    sentIntents.get(i),
+                    deliveredIntents == null ? null : deliveredIntents.get(i));
+          }
+        } catch (NullPointerException | IllegalArgumentException npe2) {
+          warn(TAG, npe);
+          throw new UndeliverableMessageException(npe2);
+        }
+      } catch (SecurityException se) {
+        warn(TAG, se);
+        throw new UndeliverableMessageException(se);
+      }
     }
   }
 
