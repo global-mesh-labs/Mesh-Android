@@ -52,6 +52,19 @@
     <string name="ApplicationPreferencesActivity_sms_mms_summary">SMS %1$s, MMS %2$s</string>
     <string name="ApplicationPreferencesActivity_privacy_summary">Screen lock %1$s, Registration lock %2$s</string>
     <string name="ApplicationPreferencesActivity_appearance_summary">Theme %1$s, Language %2$s</string>
+    <string name="preferences__pref_mesh_enable_title">Enable Mesh</string>
+    <string name="preferences__send_and_receive_over_mesh">Send and receive text messages over the mesh network</string>
+    <string name="ApplicationPreferencesActivity_mesh_disabled">Pair Mesh Device</string>
+    <string name="ApplicationPreferencesActivity_touch_to_pair_your_mesh_device">Touch to pair your mesh device</string>
+    <string name="ApplicationPreferencesActivity_mesh_enabled">Unpair mesh Device</string>
+    <string name="ApplicationPreferencesActivity_touch_to_unpair_your_mesh_device">Touch to unpair your mesh device</string>
+    <string name="ApplicationPreferencesActivity_mesh_summary">Connected [%1$s](%2$s)</string>
+    <string name="ApplicationPreferencesActivity_mesh_scanning">Scanning...</string>
+    <string name="ApplicationPreferencesActivity_turn_on_your_mesh_device">Turn on your mesh device</string>
+    <string name="ApplicationPreferencesActivity_mesh_disconnecting">Disconnecting...</string>
+    <string name="ApplicationPreferencesActivity_turn_off_your_mesh_device">Turn off your mesh device</string>
+    <string name="preferences__mesh_region">Mesh Region</string>
+    <string name="preferences__auto_tune_mesh_radio_for_current_region">Auto tune mesh radio for current region</string>
 
     <!-- AppProtectionPreferenceFragment -->
     <plurals name="AppProtectionPreferenceFragment_minutes">
@@ -1279,6 +1292,18 @@
     <string name="arrays__high">High</string>
     <string name="arrays__max">Max</string>
 
+    <string name="arrays__region_unknown">Unknown</string>
+    <string name="arrays__region_north_america">North America</string>
+    <string name="arrays__region_europe">Europe</string>
+    <string name="arrays__region_south_africa">South Africa</string>
+    <string name="arrays__region_australia">Australia</string>
+    <string name="arrays__region_new_zealand">New Zealand</string>
+    <string name="arrays__region_singapore">Singapore</string>
+    <string name="arrays__region_taiwan">Taiwan</string>
+    <string name="arrays__region_japan">Japan</string>
+    <string name="arrays__region_south_korea">South Korea</string>
+    <string name="arrays__region_hong_kong">Hong Kong</string>
+
     <!-- plurals.xml -->
     <plurals name="hours_ago">
         <item quantity="one">%dh</item>
@@ -1399,6 +1424,7 @@
     <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.</string>
     <string name="preferences_communication__sealed_sender_learn_more">Learn more</string>
     <string name="preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh">Signal needs Bluetooth permissions to connect to a mesh device</string>
+    <string name="preferences__mesh">Mesh</string>
 
     <!-- **************************************** -->
     <!-- menus -->

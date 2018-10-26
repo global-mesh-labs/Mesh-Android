@@ -33,15 +33,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 
-import com.gotenna.sdk.GoTenna;
-import com.gotenna.sdk.commands.GTCommandCenter;
-import com.gotenna.sdk.commands.GTError;
-import com.gotenna.sdk.interfaces.GTErrorListener;
+import com.gotenna.sdk.commands.Place;
 
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
-import org.thoughtcrime.securesms.mesh.models.Message;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.preferences.AdvancedPreferenceFragment;
@@ -51,6 +47,7 @@ import org.thoughtcrime.securesms.preferences.ChatsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.CorrectedPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.NotificationsPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.SmsMmsPreferenceFragment;
+import org.thoughtcrime.securesms.preferences.MeshPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.widgets.ProfilePreference;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
@@ -67,13 +64,14 @@ import org.whispersystems.libsignal.util.guava.Optional;
  */
 
 public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarActivity
-    implements SharedPreferences.OnSharedPreferenceChangeListener, GTMeshManager.IncomingMessageListener
+    implements SharedPreferences.OnSharedPreferenceChangeListener
 {
   @SuppressWarnings("unused")
   private static final String TAG = ApplicationPreferencesActivity.class.getSimpleName();
 
   private static final String PREFERENCE_CATEGORY_PROFILE        = "preference_category_profile";
   private static final String PREFERENCE_CATEGORY_SMS_MMS        = "preference_category_sms_mms";
+  private static final String PREFERENCE_CATEGORY_MESH           = "preference_category_mesh";
   private static final String PREFERENCE_CATEGORY_NOTIFICATIONS  = "preference_category_notifications";
   private static final String PREFERENCE_CATEGORY_APP_PROTECTION = "preference_category_app_protection";
   private static final String PREFERENCE_CATEGORY_APPEARANCE     = "preference_category_appearance";
@@ -100,40 +98,6 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     } else if (icicle == null) {
       initFragment(android.R.id.content, new ApplicationPreferenceFragment());
     }
-
-    // TODO: move this code to new 'Mesh' preference fragment
-    // connect to bluetooth mesh device
-    Permissions.with(this)
-            .request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH)
-            .ifNecessary()
-            .withPermanentDenialDialog(this.getString(R.string.preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh))
-            .onAnyResult(() -> {
-                if(GoTenna.tokenIsVerified()) {
-                  final String localNumber = TextSecurePreferences.getLocalNumber(this);
-                  final String  profileName  = TextSecurePreferences.getProfileName(this);
-                  long theGID = GTMeshManager.getGidFromPhoneNumber(localNumber);
-
-                  // set new random GID every time we recreate the main activity
-                  GTCommandCenter.getInstance().setGoTennaGID(theGID, profileName, new GTErrorListener() {
-                    @Override
-                    public void onError(GTError error) {
-                      android.util.Log.d("GTMeshManager", error.toString() + "," + error.getCode());
-                    }
-                  });
-                  GTMeshManager gtMeshManager = GTMeshManager.getInstance();
-
-                  // if NOT already paired, try to connect to a goTenna
-                  if (!gtMeshManager.getInstance().isPaired()) {
-                    gtMeshManager.connect();
-
-                    // set the geoloc region
-                    int region = 2; // PrefsUtil.getInstance(MainActivity.this).getValue(PrefsUtil.REGION, 0);
-                    gtMeshManager.setGeoloc(region);
-                    gtMeshManager.addIncomingMessageListener(this);
-                  }
-                }
-            })
-            .execute();
   }
 
   @Override
@@ -149,16 +113,6 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
     super.onActivityResult(requestCode, resultCode, data);
     Fragment fragment = getSupportFragmentManager().findFragmentById(android.R.id.content);
     fragment.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override
-  public void onIncomingMessage(Message incomingMessage)  {
-    Optional<MessagingDatabase.InsertResult> insertResult = GTMeshManager.getInstance().storeMessage(incomingMessage);
-    if (insertResult.isPresent()) {
-      MessageNotifier.updateNotification(this, insertResult.get().getThreadId());
-    } else {
-      Log.w(TAG, "*** Failed to insert mesh message!");
-    }
   }
 
   @Override
@@ -198,6 +152,8 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
           .setOnPreferenceClickListener(new ProfileClickListener());
       this.findPreference(PREFERENCE_CATEGORY_SMS_MMS)
         .setOnPreferenceClickListener(new CategoryClickListener(PREFERENCE_CATEGORY_SMS_MMS));
+      this.findPreference(PREFERENCE_CATEGORY_MESH)
+              .setOnPreferenceClickListener(new CategoryClickListener(PREFERENCE_CATEGORY_MESH));
       this.findPreference(PREFERENCE_CATEGORY_NOTIFICATIONS)
         .setOnPreferenceClickListener(new CategoryClickListener(PREFERENCE_CATEGORY_NOTIFICATIONS));
       this.findPreference(PREFERENCE_CATEGORY_APP_PROTECTION)
@@ -240,6 +196,8 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
 
       this.findPreference(PREFERENCE_CATEGORY_SMS_MMS)
           .setSummary(SmsMmsPreferenceFragment.getSummary(getActivity()));
+      this.findPreference(PREFERENCE_CATEGORY_MESH)
+              .setSummary(MeshPreferenceFragment.getSummary(getActivity()));
       this.findPreference(PREFERENCE_CATEGORY_NOTIFICATIONS)
           .setSummary(NotificationsPreferenceFragment.getSummary(getActivity()));
       this.findPreference(PREFERENCE_CATEGORY_APP_PROTECTION)
@@ -271,6 +229,9 @@ public class ApplicationPreferencesActivity extends PassphraseRequiredActionBarA
         switch (category) {
         case PREFERENCE_CATEGORY_SMS_MMS:
           fragment = new SmsMmsPreferenceFragment();
+          break;
+        case PREFERENCE_CATEGORY_MESH:
+          fragment = new MeshPreferenceFragment();
           break;
         case PREFERENCE_CATEGORY_NOTIFICATIONS:
           fragment = new NotificationsPreferenceFragment();

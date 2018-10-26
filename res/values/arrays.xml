@@ -324,4 +324,32 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="region_entries">
+        <item>@string/arrays__region_unknown</item>
+        <item>@string/arrays__region_north_america</item>
+        <item>@string/arrays__region_europe</item>
+        <item>@string/arrays__region_south_africa</item>
+        <item>@string/arrays__region_australia</item>
+        <item>@string/arrays__region_new_zealand</item>
+        <item>@string/arrays__region_singapore</item>
+        <item>@string/arrays__region_taiwan</item>
+        <item>@string/arrays__region_japan</item>
+        <item>@string/arrays__region_south_korea</item>
+        <item>@string/arrays__region_hong_kong</item>
+    </string-array>
+
+    <string-array name="region_values">
+        <item>UNKNOWN</item>
+        <item>NORTH_AMERICA</item>
+        <item>EUROPE</item>
+        <item>SOUTH_AFRICA</item>
+        <item>AUSTRALIA</item>
+        <item>NEW_ZEALAND</item>
+        <item>SINGAPORE</item>
+        <item>TAIWAN</item>
+        <item>JAPAN</item>
+        <item>SOUTH_KOREA</item>
+        <item>HONG_KONG</item>
+    </string-array>
+
 </resources>

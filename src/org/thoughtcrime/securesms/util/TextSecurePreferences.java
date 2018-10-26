@@ -200,6 +200,8 @@ public class TextSecurePreferences {
   private static final String HAS_SEEN_SWIPE_TO_REPLY = "pref_has_seen_swipe_to_reply";
 
   private static final String HAS_SEEN_VIDEO_RECORDING_TOOLTIP = "camerax.fragment.has.dismissed.video.recording.tooltip";
+  public  static final String MESH_ADDRESS_PREF  = "pref_mesh_connect";
+  public  static final String MESH_REGION_PREF   = "pref_mesh_region";
 
   public static boolean isScreenLockEnabled(@NonNull Context context) {
     return getBooleanPreference(context, SCREEN_LOCK, false);
@@ -1252,4 +1254,12 @@ public class TextSecurePreferences {
   public enum MediaKeyboardMode {
     EMOJI, STICKER
   }
+  public static String getMeshRegion(Context context) {
+    return getStringPreference(context, MESH_REGION_PREF, "NORTH_AMERICA");
+  }
+
+  public static void setMeshRegion(Context context, String region) {
+    setStringPreference(context, MESH_REGION_PREF, region);
+  }
+
 }
