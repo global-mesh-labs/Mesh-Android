@@ -164,6 +164,9 @@ public class TextSecurePreferences {
 
   private static final String NEEDS_MESSAGE_PULL = "pref_needs_message_pull";
 
+  public  static final String MESH_ADDRESS_PREF  = "pref_mesh_connect";
+  public  static final String MESH_REGION_PREF   = "pref_mesh_region";
+
   public static boolean isScreenLockEnabled(@NonNull Context context) {
     return getBooleanPreference(context, SCREEN_LOCK, false);
   }
@@ -1041,4 +1044,13 @@ public class TextSecurePreferences {
       return defaultValues;
     }
   }
+
+  public static String getMeshRegion(Context context) {
+    return getStringPreference(context, MESH_REGION_PREF, "NORTH_AMERICA");
+  }
+
+  public static void setMeshRegion(Context context, String region) {
+    setStringPreference(context, MESH_REGION_PREF, region);
+  }
+
 }

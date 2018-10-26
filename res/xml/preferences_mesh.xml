@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <org.thoughtcrime.securesms.components.SwitchPreferenceCompat
+                        android:defaultValue="true"
+                        android:key="pref_mesh_connect"
+                        android:title="@string/preferences__pref_mesh_enable_title"
+                        android:summary="@string/preferences__send_and_receive_over_mesh" />
+
+        <Preference android:key="pref_set_default"
+                android:title="@string/ApplicationPreferencesActivity_mesh_disabled"
+                android:summary="@string/ApplicationPreferencesActivity_touch_to_pair_your_mesh_device" />
+
+    <org.thoughtcrime.securesms.preferences.widgets.SignalListPreference
+        android:key="pref_mesh_region"
+        android:title="@string/preferences__mesh_region"
+        android:summary="@string/preferences__auto_tune_mesh_radio_for_current_region"
+        android:entries="@array/region_entries"
+        android:entryValues="@array/region_values"
+        android:defaultValue="NORTH_AMERICA"/>
+
+</PreferenceScreen>
