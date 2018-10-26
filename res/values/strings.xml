@@ -1417,14 +1417,14 @@
     <string name="preferences_chats__message_text_size">Message font size</string>
     <string name="preferences_events__contact_joined_signal">Contact joined Signal</string>
     <string name="preferences_notifications__priority">Priority</string>
+    <string name="preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh">Signal needs Bluetooth permissions to connect to a mesh device</string>
+    <string name="preferences__mesh">Mesh</string>
     <string name="preferences_communication__category_sealed_sender">Sealed Sender</string>
     <string name="preferences_communication__sealed_sender_display_indicators">Display indicators</string>
     <string name="preferences_communication__sealed_sender_display_indicators_description">Show a status icon when you select "Message details" on messages that were delivered using sealed sender.</string>
     <string name="preferences_communication__sealed_sender_allow_from_anyone">Allow from anyone</string>
     <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.</string>
     <string name="preferences_communication__sealed_sender_learn_more">Learn more</string>
-    <string name="preferences__signal_needs_bluetooth_permissions_to_connect_to_mesh">Signal needs Bluetooth permissions to connect to a mesh device</string>
-    <string name="preferences__mesh">Mesh</string>
 
     <!-- **************************************** -->
     <!-- menus -->

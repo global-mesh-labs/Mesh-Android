@@ -170,6 +170,9 @@ public class TextSecurePreferences {
 
   private static final String NEEDS_MESSAGE_PULL = "pref_needs_message_pull";
 
+  public  static final String MESH_ADDRESS_PREF  = "pref_mesh_connect";
+  public  static final String MESH_REGION_PREF   = "pref_mesh_region";
+
   private static final String UNIDENTIFIED_ACCESS_CERTIFICATE_ROTATION_TIME_PREF = "pref_unidentified_access_certificate_rotation_time";
   private static final String UNIDENTIFIED_ACCESS_CERTIFICATE_LEGACY             = "pref_unidentified_access_certificate";
   private static final String UNIDENTIFIED_ACCESS_CERTIFICATE                    = "pref_unidentified_access_certificate_uuid";
@@ -200,8 +203,6 @@ public class TextSecurePreferences {
   private static final String HAS_SEEN_SWIPE_TO_REPLY = "pref_has_seen_swipe_to_reply";
 
   private static final String HAS_SEEN_VIDEO_RECORDING_TOOLTIP = "camerax.fragment.has.dismissed.video.recording.tooltip";
-  public  static final String MESH_ADDRESS_PREF  = "pref_mesh_connect";
-  public  static final String MESH_REGION_PREF   = "pref_mesh_region";
 
   public static boolean isScreenLockEnabled(@NonNull Context context) {
     return getBooleanPreference(context, SCREEN_LOCK, false);
