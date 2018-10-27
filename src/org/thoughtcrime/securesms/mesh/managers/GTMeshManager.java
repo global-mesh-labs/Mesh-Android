@@ -338,7 +338,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         GTCommandCenter.getInstance().sendMessage(gtMessage.toBytes(), receiverGID,
                 this, this,
-                false);
+                true);
 
         gtSentIntent = sentIntent;
         gtDeliveryIntent = deliveryIntent;
