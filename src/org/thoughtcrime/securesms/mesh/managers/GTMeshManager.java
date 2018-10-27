@@ -155,17 +155,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         }
     }
 
-    // private void showGroupInvitationToast(long groupGID)
-    // {
-    //     Context context = MyApplication.getAppContext();
-    //     String message = context.getString(R.string.invited_to_group_toast_text, groupGID);
-    //
-    //     Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-    //     toast.setGravity(Gravity.CENTER, 0, 0);
-    //    toast.show();
-    // }
-
-    //==============================================================================================
+   //==============================================================================================
     // GTMessageListener Implementation
     //==============================================================================================
 
@@ -344,7 +334,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         GTCommandCenter.getInstance().sendMessage(gtMessage.toBytes(), receiverGID,
                 this, this,
-                false);
+                true);
 
         gtSentIntent = sentIntent;
         gtDeliveryIntent = deliveryIntent;
