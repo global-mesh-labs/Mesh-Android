@@ -28,8 +28,6 @@ import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
-import org.thoughtcrime.securesms.mesh.models.Message;
-import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
