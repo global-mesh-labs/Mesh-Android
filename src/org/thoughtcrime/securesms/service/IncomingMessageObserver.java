@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.IncomingMessageProcessor.Processor;
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencies;
 import org.thoughtcrime.securesms.jobmanager.ConstraintObserver;
@@ -21,17 +22,21 @@ import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
+import org.thoughtcrime.securesms.mesh.models.Message;
+import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.InvalidVersionException;
+import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.SignalServiceMessagePipe;
 import org.whispersystems.signalservice.api.SignalServiceMessageReceiver;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class IncomingMessageObserver implements ConstraintObserver.Notifier {
+public class IncomingMessageObserver implements ConstraintObserver.Notifier, GTMeshManager.IncomingMessageListener {
 
   private static final String TAG = IncomingMessageObserver.class.getSimpleName();
 
@@ -55,6 +60,8 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier {
 
     new NetworkConstraintObserver(ApplicationContext.getInstance(context)).register(this);
     new MessageRetrievalThread().start();
+
+    GTMeshManager.getInstance().addIncomingMessageListener(this);
 
     if (TextSecurePreferences.isFcmDisabled(context)) {
       ContextCompat.startForegroundService(context, new Intent(context, ForegroundService.class));
@@ -118,6 +125,8 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier {
     } catch (Throwable t) {
       Log.w(TAG, t);
     }
+
+    GTMeshManager.getInstance().removeIncomingMessageListener(this);
   }
 
   public static @Nullable SignalServiceMessagePipe getPipe() {
@@ -206,5 +215,20 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier {
 
       return Service.START_STICKY;
     }
+  }
+
+  @Override
+  public void onIncomingMessage(Message incomingMessage)  {
+    Runnable r = new Runnable() {
+      public void run() {
+        Optional<MessagingDatabase.InsertResult> insertResult = GTMeshManager.getInstance().storeMessage(incomingMessage);
+        if (insertResult.isPresent()) {
+          MessageNotifier.updateNotification(context, insertResult.get().getThreadId());
+        } else {
+          Log.w(TAG, "*** Failed to insert mesh message!");
+        }
+      }
+    };
+    new Thread(r).start();
   }
 }
