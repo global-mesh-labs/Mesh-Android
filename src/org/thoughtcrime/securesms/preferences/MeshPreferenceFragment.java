@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.preferences;
 
 import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,11 +26,8 @@ import com.gotenna.sdk.interfaces.GTErrorListener;
 
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
-import org.thoughtcrime.securesms.mesh.models.Message;
-import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
@@ -36,13 +35,12 @@ import org.whispersystems.libsignal.util.guava.Optional;
 
 import java.util.Arrays;
 
-import static com.gotenna.sdk.commands.Place.NORTH_AMERICA;
-
 public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implements Preference.OnPreferenceClickListener, SharedPreferences.OnSharedPreferenceChangeListener,
-        GTMeshManager.IncomingMessageListener, GTConnectionManager.GTConnectionListener {
+        GTConnectionManager.GTConnectionListener {
     private static final String KITKAT_DEFAULT_PREF = "pref_set_default";
     private static final String TAG = MeshPreferenceFragment.class.getSimpleName();
     private static final int SCAN_TIMEOUT = 25000; // 25 seconds
+    private static final int REQUEST_ENABLE_BT=1;
 
     // private Handler handler;
     private Handler handler;
@@ -62,8 +60,14 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(android.os.Message msg) {
+                Log.w(TAG, "no connection, scanning timed out (" + msg.what + ").");
                 if (msg.what == 0) {
-                    // no connection, scanning timed out
+                    initializeDefaultPreference();
+                }
+                else if (msg.what == 1) {
+                    // re-click on the button to connect to the mesh device after bluetooth enabled
+                    Preference defaultPreference = findPreference(KITKAT_DEFAULT_PREF);
+                    onPreferenceClick(defaultPreference);
                 }
             }
         };
@@ -123,9 +127,45 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
         }
     }
 
-    @Override
+    private void internalConnect() {
+        // connect to goTenna
+        GTMeshManager gtMeshManager = GTMeshManager.getInstance();
+        gtMeshManager.connect(this);
+
+        // start timeout handler
+        handler.postDelayed(scanTimeoutRunnable, SCAN_TIMEOUT);
+
+        // disable button while scanning
+        Preference defaultPreference = findPreference(KITKAT_DEFAULT_PREF);
+        defaultPreference.setEnabled(false);
+        defaultPreference.setTitle(getString(R.string.ApplicationPreferencesActivity_mesh_scanning));
+        defaultPreference.setSummary(getString(R.string.ApplicationPreferencesActivity_turn_on_your_mesh_device));
+    }
+
+    private void internalDisconnect() {
+        GTMeshManager gtMeshManager = GTMeshManager.getInstance();
+        gtMeshManager.disconnect(this);
+
+        // disable button while disconnecting
+        Preference defaultPreference = findPreference(KITKAT_DEFAULT_PREF);
+        defaultPreference.setEnabled(false);
+        defaultPreference.setTitle(getString(R.string.ApplicationPreferencesActivity_mesh_disconnecting));
+        defaultPreference.setSummary(getString(R.string.ApplicationPreferencesActivity_turn_off_your_mesh_device));
+    }
+
+        @Override
     public boolean onPreferenceClick(Preference preference) {
-        // connect to bluetooth mesh device
+
+        // prompt first to turn on bluetooth adapter is off
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(!bluetoothAdapter.isEnabled())
+        {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return true;
+        }
+
+        // connect or disconnect bluetooth mesh device
         Permissions.with(this)
                 .request(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH)
                 .ifNecessary()
@@ -144,40 +184,19 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
                             }
                         });
 
-                        Preference defaultPreference = findPreference(KITKAT_DEFAULT_PREF);
-                        defaultPreference.setEnabled(false);
-
-                        GTMeshManager gtMeshManager = GTMeshManager.getInstance();
-
                         // if NOT already paired, try to connect to a goTenna
+                        GTMeshManager gtMeshManager = GTMeshManager.getInstance();
                         if (!gtMeshManager.getInstance().isPaired()) {
-                            // connect to goTenna
-                            gtMeshManager.connect(this);
-                            handler.postDelayed(scanTimeoutRunnable, SCAN_TIMEOUT);
-
-                            defaultPreference.setTitle(getString(R.string.ApplicationPreferencesActivity_mesh_scanning));
-                            defaultPreference.setSummary(getString(R.string.ApplicationPreferencesActivity_turn_on_your_mesh_device));
+                           // connect to goTenna
+                            internalConnect();
                         } else {
-                            // connect to goTenna
-                            gtMeshManager.disconnect(this);
-
-                            defaultPreference.setTitle(getString(R.string.ApplicationPreferencesActivity_mesh_disconnecting));
-                            defaultPreference.setSummary(getString(R.string.ApplicationPreferencesActivity_turn_off_your_mesh_device));
+                            // disconnect from goTenna
+                            internalDisconnect();
                         }
                     }
                 })
                 .execute();
         return true;
-    }
-
-    @Override
-    public void onIncomingMessage(Message incomingMessage) {
-        Optional<MessagingDatabase.InsertResult> insertResult = GTMeshManager.getInstance().storeMessage(incomingMessage);
-        if (insertResult.isPresent()) {
-            MessageNotifier.updateNotification(this.getContext(), insertResult.get().getThreadId());
-        } else {
-            Log.w(TAG, "*** Failed to insert mesh message!");
-        }
     }
 
     public static CharSequence getSummary(Context context) {
@@ -258,4 +277,18 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
         }
     }
 
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, final Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+        if (resultCode != Activity.RESULT_OK)
+            return;
+
+        switch (reqCode) {
+            case REQUEST_ENABLE_BT:
+                // re-click on the button to connect to the mesh device after bluetooth enabled
+                handler.sendEmptyMessage(1);
+                break;
+        }
+    }
 }
