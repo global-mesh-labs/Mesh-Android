@@ -209,6 +209,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         Address sender = Address.fromExternal(applicationContext, senderGID);
         Optional<SignalServiceGroup> group = Optional.absent();
+
         boolean unidentified = false;
         IncomingTextMessage message = new IncomingTextMessage(sender, 0, System.currentTimeMillis(), gtMessage.getText(), group,0,unidentified);
 

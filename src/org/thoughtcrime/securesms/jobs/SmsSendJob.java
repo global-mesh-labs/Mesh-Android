@@ -161,7 +161,6 @@ public class SmsSendJob extends SendJob {
     if (GTMeshManager.getInstance().isPaired()) {
       // send first message over the mesh
       // TODO: send all message parts, not just first one
-
       // TODO: handle delivery intent for mesh messages (create a new message.type?)
       if (deliveredIntents == null) {
         deliveredIntents = new ArrayList<>(1);
