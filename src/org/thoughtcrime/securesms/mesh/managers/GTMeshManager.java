@@ -5,11 +5,10 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 import com.gotenna.sdk.GoTenna;
 import com.gotenna.sdk.bluetooth.GTConnectionManager;
@@ -32,7 +31,6 @@ import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.mesh.models.Message;
 import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.threeten.bp.Instant;

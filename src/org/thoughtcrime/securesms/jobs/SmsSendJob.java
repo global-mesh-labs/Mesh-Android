@@ -139,7 +139,6 @@ public class SmsSendJob extends SendJob {
     if (GTMeshManager.getInstance().isPaired()) {
       // send first message over the mesh
       // TODO: send all message parts, not just first one
-
       // TODO: handle delivery intent for mesh messages (create a new message.type?)
       if (deliveredIntents == null) {
         deliveredIntents = new ArrayList<>(1);
@@ -171,11 +170,11 @@ public class SmsSendJob extends SendJob {
                     deliveredIntents == null ? null : deliveredIntents.get(i));
           }
         } catch (NullPointerException | IllegalArgumentException npe2) {
-          warn(TAG, npe);
+          Log.w(TAG, npe);
           throw new UndeliverableMessageException(npe2);
         }
       } catch (SecurityException se) {
-        warn(TAG, se);
+        Log.w(TAG, se);
         throw new UndeliverableMessageException(se);
       }
     }
