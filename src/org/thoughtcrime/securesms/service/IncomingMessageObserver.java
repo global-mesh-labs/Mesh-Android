@@ -19,16 +19,10 @@ import org.thoughtcrime.securesms.jobmanager.ConstraintObserver;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraintObserver;
 
-import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.dependencies.InjectableType;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirement;
-import org.thoughtcrime.securesms.jobmanager.requirements.NetworkRequirementProvider;
-import org.thoughtcrime.securesms.jobmanager.requirements.RequirementListener;
-import org.thoughtcrime.securesms.jobs.PushContentReceiveJob;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 import org.thoughtcrime.securesms.mesh.models.Message;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;

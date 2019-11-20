@@ -1259,8 +1259,4 @@ public class TextSecurePreferences {
     return getStringPreference(context, MESH_REGION_PREF, "NORTH_AMERICA");
   }
 
-  public static void setMeshRegion(Context context, String region) {
-    setStringPreference(context, MESH_REGION_PREF, region);
-  }
-
 }

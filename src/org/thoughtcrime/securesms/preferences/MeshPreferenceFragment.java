@@ -13,16 +13,21 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import com.gotenna.sdk.GoTenna;
-import com.gotenna.sdk.bluetooth.GTConnectionManager;
-import com.gotenna.sdk.commands.GTCommandCenter;
-import com.gotenna.sdk.commands.GTError;
-import com.gotenna.sdk.commands.Place;
-import com.gotenna.sdk.interfaces.GTErrorListener;
+import com.gotenna.sdk.connection.GTConnectionManager;
+import com.gotenna.sdk.connection.GTConnectionState;
+import com.gotenna.sdk.connection.GTConnectionError;
+import com.gotenna.sdk.data.GTCommand.GTCommandResponseListener;
+import com.gotenna.sdk.data.GTCommandCenter;
+import com.gotenna.sdk.data.GTError;
+import com.gotenna.sdk.data.GTErrorListener;
+import com.gotenna.sdk.data.GTResponse;
+import com.gotenna.sdk.data.Place;
 
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
 import org.thoughtcrime.securesms.R;
@@ -176,14 +181,6 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
                         final String profileName = TextSecurePreferences.getProfileName(this.getContext());
                         long theGID = GTMeshManager.getGidFromPhoneNumber(localNumber);
 
-                        // set new random GID every time we recreate the main activity
-                        GTCommandCenter.getInstance().setGoTennaGID(theGID, profileName, new GTErrorListener() {
-                            @Override
-                            public void onError(GTError error) {
-                                android.util.Log.d(TAG, error.toString() + "," + error.getCode());
-                            }
-                        });
-
                         // if NOT already paired, try to connect to a goTenna
                         GTMeshManager gtMeshManager = GTMeshManager.getInstance();
                         if (!gtMeshManager.getInstance().isPaired()) {
@@ -193,6 +190,42 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
                             // disconnect from goTenna
                             internalDisconnect();
                         }
+
+                        // set new random GID every time we recreate the main activity
+                        GTCommandCenter.getInstance().setGoTennaGID(theGID, profileName, new GTCommandResponseListener()
+                        {
+                            @Override
+                            public void onResponse(GTResponse response)
+                            {
+                                /*
+                                if (view == null)
+                                {
+                                    return;
+                                }
+
+                                if (response.getResponseCode() == GTResponse.GTCommandResponseCode.POSITIVE)
+                                {
+                                    view.showSetGidSuccessMessage();
+                                }
+                                else
+                                {
+                                    view.showSetGidFailureMessage();
+                                }
+                                */
+                            }
+                        }, new GTErrorListener()
+                        {
+                            @Override
+                            public void onError(GTError error)
+                            {
+                                    /*
+                                    if (view != null)
+                                    {
+                                        view.showSetGidFailureMessage();
+                                    }
+                                    */
+                            }
+                        });
                     }
                 })
                 .execute();
@@ -230,7 +263,7 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
     }
 
     @Override
-    public void onConnectionStateUpdated(GTConnectionManager.GTConnectionState gtConnectionState) {
+    public void onConnectionStateUpdated(@NonNull GTConnectionState gtConnectionState) {
         switch (gtConnectionState) {
             case CONNECTED: {
                 android.util.Log.d(TAG, "Connected to device.");
@@ -247,10 +280,36 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
             }
             break;
         }
-        if (gtConnectionState != GTConnectionManager.GTConnectionState.SCANNING) {
+        if (gtConnectionState != GTConnectionState.SCANNING) {
             GTConnectionManager.getInstance().removeGtConnectionListener(this);
             handler.removeCallbacks(scanTimeoutRunnable);
             initializeDefaultPreference();
+        }
+    }
+
+    @Override
+    public void onConnectionError(@NonNull GTConnectionState connectionState, @NonNull GTConnectionError error)
+    {
+        //view.stopTimeoutCountdown();
+        //view.dismissScanningProgressDialog();
+
+        switch (error.getErrorState())
+        {
+            case X_UPGRADE_CHECK_FAILED:
+                /*
+                    This error gets passed when we failed to check if the device is goTenna X. This
+                    could happen due to connectivity issues with the device or error checking if the
+                    device has been remotely upgraded.
+                 */
+                //view.showXCheckError();
+                break;
+            case NOT_X_DEVICE_ERROR:
+                /*
+                    This device is confirmed not to be a goTenna X device. Using error.getDetailString()
+                    you can pull the serial number of the connected device.
+                 */
+                //view.showNotXDeviceWarning(error.getDetailString());
+                break;
         }
     }
 

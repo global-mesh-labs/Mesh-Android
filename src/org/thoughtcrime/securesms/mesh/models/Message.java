@@ -3,8 +3,9 @@ package org.thoughtcrime.securesms.mesh.models;
 import android.util.Log;
 
 import com.gotenna.sdk.exceptions.GTDataMissingException;
-import com.gotenna.sdk.messages.GTBaseMessageData;
-import com.gotenna.sdk.messages.GTTextOnlyMessageData;
+// import com.gotenna.sdk.data.messages.GTBaseMessageData;
+import com.gotenna.sdk.data.messages.GTTextOnlyMessageData;
+// import com.gotenna.sdk.sample.managers.ContactsManager;
 
 import java.util.Date;
 
@@ -141,25 +142,28 @@ public class Message
                             gtTextOnlyMessageData.getMessageSentDate(),
                             gtTextOnlyMessageData.getText(),
                             MessageStatus.SENT_SUCCESSFULLY,
-                            getDetailInfo(gtTextOnlyMessageData));
+                            "");
+                            //getDetailInfo(gtTextOnlyMessageData));
     }
 
+    /*
     private static String getDetailInfo(GTBaseMessageData gtBaseMessageData)
     {
-        //Contact contact = ContactsManager.getInstance().findContactWithGid(gtBaseMessageData.getSenderGID());
+        Contact contact = ContactsManager.getInstance().findContactWithGid(gtBaseMessageData.getSenderGID());
         String senderInitials = gtBaseMessageData.getSenderInitials();
 
-        //if (contact != null)
-        //{
-        //    return "TBD"; // contact.getName();
-        //}
-        //else if (senderInitials != null)
-        //{
-        //    return senderInitials;
-        //}
-        //else
+        if (contact != null)
+        {
+            return contact.getName();
+        }
+        else if (senderInitials != null)
+        {
+            return senderInitials;
+        }
+        else
         {
             return Long.toString(gtBaseMessageData.getSenderGID());
         }
     }
+    */
 }

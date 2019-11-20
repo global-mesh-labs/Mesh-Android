@@ -5,32 +5,37 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.os.Handler;
+
+import androidx.core.content.ContextCompat;
 
 import com.gotenna.sdk.GoTenna;
-import com.gotenna.sdk.bluetooth.GTConnectionManager;
-import com.gotenna.sdk.commands.GTCommand;
-import com.gotenna.sdk.commands.GTCommandCenter;
-import com.gotenna.sdk.commands.GTError;
-import com.gotenna.sdk.commands.Place;
+import com.gotenna.sdk.connection.GTConnectionManager;
+import com.gotenna.sdk.data.GTCommand;
+import com.gotenna.sdk.data.GTCommandCenter;
+import com.gotenna.sdk.data.GTError;
+import com.gotenna.sdk.data.Place;
 import com.gotenna.sdk.exceptions.GTInvalidAppTokenException;
-import com.gotenna.sdk.interfaces.GTErrorListener;
-import com.gotenna.sdk.messages.GTBaseMessageData;
-import com.gotenna.sdk.messages.GTGroupCreationMessageData;
-import com.gotenna.sdk.messages.GTMessageData;
-import com.gotenna.sdk.messages.GTTextOnlyMessageData;
-import com.gotenna.sdk.responses.GTResponse;
-import com.gotenna.sdk.types.GTDataTypes;
+import com.gotenna.sdk.data.GTErrorListener;
+import com.gotenna.sdk.data.messages.GTBaseMessageData;
+import com.gotenna.sdk.data.messages.GTGroupCreationMessageData;
+import com.gotenna.sdk.data.messages.GTMessageData;
+import com.gotenna.sdk.data.messages.GTTextOnlyMessageData;
+import com.gotenna.sdk.data.GTResponse;
+import com.gotenna.sdk.data.GTDeviceType;
+import com.gotenna.sdk.connection.GTConnectionState;
 
-import org.thoughtcrime.securesms.database.Address;
+import org.thoughtcrime.securesms.mesh.models.SendMessageInteractor;
+
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.mesh.models.Message;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.threeten.bp.Instant;
@@ -58,11 +63,12 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     private static final String GOTENNA_APP_TOKEN = "your token goes here";// TODO: Insert your token
     private static Context applicationContext;
     private static final String TAG = GTMeshManager.class.getSimpleName();
+    private static final boolean WILL_ENCRYPT_MESSAGES = true; // Can optionally encrypt messages using SDK
 
     private GTConnectionManager gtConnectionManager = null;
     private static final int SCAN_TIMEOUT = 25000; // 25 seconds
 
-     private Handler handler;
+    private Handler handler;
     // private NetworkingActivity callbackActivity;
 
     // set in ConversationActivity
@@ -72,6 +78,8 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     private Recipient recipient;
 
     private final ArrayList<IncomingMessageListener> incomingMessageListeners;
+
+    private  SendMessageInteractor sendMessageInteractor;
 
     // set in
     private PendingIntent gtSentIntent;
@@ -106,12 +114,14 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         applicationContext = context;
         try {
-            GoTenna.setApplicationToken(context.getApplicationContext(), GOTENNA_APP_TOKEN);
+            GoTenna.setApplicationToken(context.getApplicationContext(), "FhkTSkINBkUDUhxEV10NBx5SRARHUlgDB0BcBlsDCA4QCgRKB0VDBV8IQg4XSERf");
             if(GoTenna.tokenIsVerified())    {
                 Log.d(TAG, "goTenna token is verified:" + GoTenna.tokenIsVerified());
             }
             gtConnectionManager = GTConnectionManager.getInstance();
             startListening();
+
+            sendMessageInteractor = new SendMessageInteractor();
         }
         catch(GTInvalidAppTokenException e) {
             e.printStackTrace();
@@ -228,7 +238,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
     public boolean isPaired()  {
 
-        if(gtConnectionManager.getGtConnectionState() == GTConnectionManager.GTConnectionState.CONNECTED) {
+        if(gtConnectionManager.getGtConnectionState() == GTConnectionState.CONNECTED) {
             return (gtConnectionManager.getConnectedGotennaAddress() != null);
         }
         return false;
@@ -238,7 +248,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         GTCommandCenter.getInstance().sendSetGeoRegion(place, new GTCommand.GTCommandResponseListener() {
             @Override
             public void onResponse(GTResponse response) {
-                if (response.getResponseCode() == GTDataTypes.GTCommandResponseCode.POSITIVE) {
+                if (response.getResponseCode() == GTResponse.GTCommandResponseCode.POSITIVE) {
                     Log.d(TAG, "Region set OK");
                 } else {
                     Log.d(TAG, "Region set:" + response.toString());
@@ -274,7 +284,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
                 gtConnectionManager.addGtConnectionListener(listener);
             }
             gtConnectionManager.clearConnectedGotennaAddress();
-            gtConnectionManager.scanAndConnect(GTConnectionManager.GTDeviceType.MESH);
+            gtConnectionManager.scanAndConnect(GTDeviceType.MESH);
         }
     }
 
@@ -283,11 +293,11 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         Log.d(TAG, "onResponse: " + gtResponse.toString());
         try {
-            if (gtResponse.getResponseCode() == GTDataTypes.GTCommandResponseCode.POSITIVE) {
+            if (gtResponse.getResponseCode() == GTResponse.GTCommandResponseCode.POSITIVE) {
                 gtSentIntent.send(Activity.RESULT_OK); // Sent!
                 gtDeliveryIntent.send();  // Delivered!
             }
-            else if (gtResponse.getResponseCode() == GTDataTypes.GTCommandResponseCode.NEGATIVE) {
+            else if (gtResponse.getResponseCode() == GTResponse.GTCommandResponseCode.NEGATIVE) {
                 // TODO: map responses properly to intent parsing
                 gtSentIntent.send(SmsManager.RESULT_ERROR_NO_SERVICE); // FAILED_TYPE
             }
@@ -334,9 +344,20 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         Date localDateTime = new Date(Instant.now().toEpochMilli());
         Message gtMessage = new Message(senderGID, receiverGID, localDateTime, text, Message.MessageStatus.SENDING, "");
 
-        GTCommandCenter.getInstance().sendMessage(gtMessage.toBytes(), receiverGID,
-                this, this,
-                true);
+        sendMessageInteractor.sendMessage(gtMessage, WILL_ENCRYPT_MESSAGES,
+                new SendMessageInteractor.SendMessageListener()
+                {
+                    @Override
+                    public void onMessageResponseReceived()
+                    {
+                        /*
+                        if (view != null)
+                        {
+                            view.showMessages(createMessageViewModels());
+                        }
+                        */
+                    }
+                });
 
         gtSentIntent = sentIntent;
         gtDeliveryIntent = deliveryIntent;

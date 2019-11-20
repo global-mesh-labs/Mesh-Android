@@ -170,11 +170,11 @@ public class SmsSendJob extends SendJob {
                     deliveredIntents == null ? null : deliveredIntents.get(i));
           }
         } catch (NullPointerException | IllegalArgumentException npe2) {
-          Log.w(TAG, npe);
+          warn(TAG, npe);
           throw new UndeliverableMessageException(npe2);
         }
       } catch (SecurityException se) {
-        Log.w(TAG, se);
+        warn(TAG, se);
         throw new UndeliverableMessageException(se);
       }
     }

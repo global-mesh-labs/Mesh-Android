@@ -17,9 +17,6 @@
  */
 package org.thoughtcrime.securesms;
 
-import android.Manifest;
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
@@ -27,17 +24,11 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 
-import org.thoughtcrime.securesms.database.MessagingDatabase;
-import org.thoughtcrime.securesms.logging.Log;
-import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
-import org.thoughtcrime.securesms.notifications.MessageNotifier;
-import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.preferences.AdvancedPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.AppProtectionPreferenceFragment;
 import org.thoughtcrime.securesms.preferences.AppearancePreferenceFragment;
@@ -52,14 +43,6 @@ import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ThemeUtil;
-import org.whispersystems.libsignal.util.guava.Optional;
-
-import com.gotenna.sdk.GoTenna;
-import com.gotenna.sdk.commands.GTCommandCenter;
-import com.gotenna.sdk.commands.GTError;
-import com.gotenna.sdk.commands.Place;
-import com.gotenna.sdk.interfaces.GTErrorListener;
-import com.gotenna.sdk.commands.Place;
 
 /**
  * The Activity for application preference display and management.

@@ -275,7 +275,7 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                           'proguard-firebase-messaging.pro',
                           'proguard-google-play-services.pro',
@@ -308,7 +308,7 @@ android {
             buildConfigField "String", "UNIDENTIFIED_SENDER_TRUST_ROOT", "\"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx\""
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles = buildTypes.debug.proguardFiles
         }
     }

@@ -402,8 +402,4 @@ public class ApplicationContext extends MultiDexApplication implements DefaultLi
 
   private static class ProviderInitializationException extends RuntimeException {
   }
-  
-  private void initializeMeshManager() {
-    GTMeshManager.getInstance().initToken(this);
-  }
 }
