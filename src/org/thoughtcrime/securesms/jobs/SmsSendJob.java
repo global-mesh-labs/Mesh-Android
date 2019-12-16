@@ -147,7 +147,12 @@ public class SmsSendJob extends SendJob {
                 0));
       }
 
-      GTMeshManager.getInstance().sendTextMessageInternal(recipient, null, message.getBody(),
+      // Send to SMS gateway, but prepend message with external phone number
+      // TODO: first try to send directly via mesh before sending to SMS gateway
+      final String new_text = recipient + " " + message.getBody();
+      final String gatewayGID = "555555555";
+
+      GTMeshManager.getInstance().sendTextMessageInternal(gatewayGID, null, new_text,
               sentIntents.get(0),
               deliveredIntents == null ? null : deliveredIntents.get(0), true);
     }
