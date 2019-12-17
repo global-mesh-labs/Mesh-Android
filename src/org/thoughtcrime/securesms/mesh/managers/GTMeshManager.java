@@ -60,7 +60,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     // Class Properties
     //==============================================================================================
 
-    private static final String GOTENNA_APP_TOKEN = "<YOUR SDK TOKEN GOES HERE>";// TODO: Insert your token
+    private static final String GOTENNA_APP_TOKEN = "";// TODO: Insert your token
     private static Context applicationContext;
     private static final String TAG = GTMeshManager.class.getSimpleName();
     private static final boolean WILL_ENCRYPT_MESSAGES = true; // Can optionally encrypt messages using SDK
@@ -114,7 +114,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         applicationContext = context;
         try {
-            GoTenna.setApplicationToken(context.getApplicationContext(), "FhkTSkINBkUDUhxEV10NBx5SRARHUlgDB0BcBlsDCA4QCgRKB0VDBV8IQg4XSERf");
+            GoTenna.setApplicationToken(context.getApplicationContext(), GOTENNA_APP_TOKEN);
             if(GoTenna.tokenIsVerified())    {
                 Log.d(TAG, "goTenna token is verified:" + GoTenna.tokenIsVerified());
             }
