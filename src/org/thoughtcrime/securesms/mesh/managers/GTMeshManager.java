@@ -217,7 +217,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
             // TODO: throw new SmsReceiveJob.MigrationPendingException();
         }
 
-        final String senderGID = Long.toString(gtMessage.getSenderGID());
+        final String senderGID = "+" + Long.toString(gtMessage.getSenderGID());
         Log.d(TAG, "storeMessage from sender GID:" + senderGID);
 
         Recipient recipient = Recipient.external(applicationContext, senderGID);

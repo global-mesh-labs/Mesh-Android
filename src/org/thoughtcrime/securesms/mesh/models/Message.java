@@ -137,10 +137,20 @@ public class Message
 
     public static Message createMessageFromData(GTTextOnlyMessageData gtTextOnlyMessageData)
     {
-        return new Message(gtTextOnlyMessageData.getSenderGID(),
+        String textPayload = gtTextOnlyMessageData.getText();
+        long senderGID = gtTextOnlyMessageData.getSenderGID();
+        if (gtTextOnlyMessageData.getSenderGID() == 555555555) {
+            // parse first space separated string as the senders phone number
+            String parts[] = gtTextOnlyMessageData.getText().split(" ", 2);
+            if (parts.length == 2) {
+                senderGID = Long.parseLong(parts[0], 10);
+                textPayload = parts[1];
+            }
+        }
+        return new Message(senderGID,
                             gtTextOnlyMessageData.getRecipientGID(),
                             gtTextOnlyMessageData.getMessageSentDate(),
-                            gtTextOnlyMessageData.getText(),
+                            textPayload,
                             MessageStatus.SENT_SUCCESSFULLY,
                             "");
                             //getDetailInfo(gtTextOnlyMessageData));
