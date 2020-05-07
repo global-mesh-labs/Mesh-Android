@@ -233,8 +233,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         Recipient recipient = Recipient.external(applicationContext, senderGID);
         RecipientId sender = recipient.getId();
-        Optional<GroupId> group = null;
-        IncomingTextMessage message = new IncomingTextMessage(sender, 0, System.currentTimeMillis(), gtMessage.getText(), group,0,false);
+        IncomingTextMessage message = new IncomingTextMessage(sender, 0, System.currentTimeMillis(), gtMessage.getText(), Optional.absent(),0,false);
     
         if (message.isSecureMessage()) {
           IncomingTextMessage placeholder  = new IncomingTextMessage(message, "");
