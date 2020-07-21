@@ -62,8 +62,6 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier, GTM
     new NetworkConstraintObserver(ApplicationContext.getInstance(context)).register(this);
     new MessageRetrievalThread().start();
 
-    GTMeshManager.getInstance().addIncomingMessageListener(this);
-
     if (TextSecurePreferences.isFcmDisabled(context)) {
       ContextCompat.startForegroundService(context, new Intent(context, ForegroundService.class));
     }
@@ -78,6 +76,9 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier, GTM
       public void onStop(@NonNull LifecycleOwner owner) {
         onAppBackgrounded();
       }
+
+      @Override
+      public void onDestroy(@NonNull LifecycleOwner owner) { onAppDestroyed(); }
     });
   }
 
@@ -90,12 +91,19 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier, GTM
 
   private synchronized void onAppForegrounded() {
     appVisible = true;
+    Log.i(TAG, "GTMeshManager -> addIncomingMessageListener");
+    GTMeshManager.getInstance().addIncomingMessageListener(this);
     notifyAll();
   }
 
   private synchronized void onAppBackgrounded() {
     appVisible = false;
     notifyAll();
+  }
+
+  private synchronized void onAppDestroyed() {
+    Log.i(TAG, "GTMeshManager -> removeIncomingMessageListener");
+    GTMeshManager.getInstance().removeIncomingMessageListener(this);
   }
 
   private synchronized boolean isConnectionNecessary() {
@@ -126,8 +134,6 @@ public class IncomingMessageObserver implements ConstraintObserver.Notifier, GTM
     } catch (Throwable t) {
       Log.w(TAG, t);
     }
-
-    GTMeshManager.getInstance().removeIncomingMessageListener(this);
   }
 
   public static @Nullable SignalServiceMessagePipe getPipe() {
