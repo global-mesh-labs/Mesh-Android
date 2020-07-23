@@ -149,12 +149,12 @@ public class SmsSendJob extends SendJob {
 
       // Send to SMS gateway, but prepend message with external phone number
       // TODO: first try to send directly via mesh before sending to SMS gateway
-      final String new_text = recipient + " " + message.getBody();
       final String gatewayGID = "555555555";
 
-      GTMeshManager.getInstance().sendTextMessageInternal(gatewayGID, null, new_text,
+      GTMeshManager.getInstance().sendTextMessageInternal(gatewayGID, recipient, message.getBody(),
               sentIntents.get(0),
               deliveredIntents == null ? null : deliveredIntents.get(0), true);
+
     }
     else {
       // NOTE 11/04/14 -- There's apparently a bug where for some unknown recipients

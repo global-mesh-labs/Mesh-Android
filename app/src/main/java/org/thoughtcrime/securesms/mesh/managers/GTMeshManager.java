@@ -18,6 +18,7 @@ import com.gotenna.sdk.data.GTCommand;
 import com.gotenna.sdk.data.GTCommandCenter;
 import com.gotenna.sdk.data.GTError;
 import com.gotenna.sdk.data.Place;
+import com.gotenna.sdk.data.messages.GTBinaryMessageData;
 import com.gotenna.sdk.exceptions.GTInvalidAppTokenException;
 import com.gotenna.sdk.data.GTErrorListener;
 import com.gotenna.sdk.data.messages.GTBaseMessageData;
@@ -28,12 +29,14 @@ import com.gotenna.sdk.data.GTResponse;
 import com.gotenna.sdk.data.GTDeviceType;
 import com.gotenna.sdk.connection.GTConnectionState;
 
+import org.thoughtcrime.securesms.mesh.models.SMSMessage;
 import org.thoughtcrime.securesms.mesh.models.SendMessageInteractor;
 
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.mesh.models.Message;
+import org.thoughtcrime.securesms.mesh.models.TxMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
@@ -52,6 +55,8 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.ECGenParameterSpec;
 import java.security.Security;
+
+import static java.lang.Math.ceil;
 
 /**
  * A singleton that manages listening for incoming messages from the SDK and parses them into
@@ -194,6 +199,13 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     @Override
     public void onIncomingMessage(GTBaseMessageData gtBaseMessageData)
     {
+        if (gtBaseMessageData instanceof GTBinaryMessageData)
+        {
+            // Somebody sent us a message, try to parse it
+            GTBinaryMessageData gtBaseBinaryData = (GTBinaryMessageData) gtBaseMessageData;
+            Message incomingMessage = Message.createMessageFromData(gtBaseBinaryData);
+            notifyIncomingMessage(incomingMessage);
+        }
         if (gtBaseMessageData instanceof GTTextOnlyMessageData)
         {
             // Somebody sent us a message, try to parse it
@@ -336,15 +348,15 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         }
     }
 
-    public void sendTextMessageInternal(String destinationAddress, String scAddress,
-                                         String text, PendingIntent sentIntent, PendingIntent deliveryIntent,
+    public void sendTextMessageInternal(String destinationAddress, String phoneNumber,
+                                         String textMessage, PendingIntent sentIntent, PendingIntent deliveryIntent,
                                          boolean persistMessage) {
 
         if (TextUtils.isEmpty(destinationAddress)) {
             throw new IllegalArgumentException("Invalid destinationAddress");
         }
 
-        if (TextUtils.isEmpty(text)) {
+        if (TextUtils.isEmpty(textMessage)) {
             throw new IllegalArgumentException("Invalid message body");
         }
 
@@ -354,9 +366,9 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         long receiverGID = getGidFromPhoneNumber(destinationAddress);
 
         Date localDateTime = new Date();
-        Message gtMessage = new Message(senderGID, receiverGID, localDateTime, text, Message.MessageStatus.SENDING, "");
+        SMSMessage gtMessage = new SMSMessage(senderGID, receiverGID, localDateTime, phoneNumber, textMessage, Message.MessageStatus.SENDING, "");
 
-        sendMessageInteractor.sendMessage(gtMessage, false,
+        sendMessageInteractor.sendMessage(gtMessage, true,
                 new SendMessageInteractor.SendMessageListener()
                 {
                     @Override
@@ -378,5 +390,45 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         //        destinationAddress,
         //        scAddress, text, sentIntent, deliveryIntent,
         //        persistMessage);
+    }
+
+    public void sendBitcoinTxInternal(String destinationAddress, String hexString, String network) {
+
+        if (TextUtils.isEmpty(destinationAddress)) {
+            throw new IllegalArgumentException("Invalid destinationAddress");
+        }
+
+        if (hexString.isEmpty()) {
+            throw new IllegalArgumentException("Invalid message body");
+        }
+
+        // TODO: set willEncrypt to true
+        final String localAddress = TextSecurePreferences.getLocalNumber(applicationContext);
+        long senderGID = getGidFromPhoneNumber(localAddress);
+        long receiverGID = getGidFromPhoneNumber(destinationAddress);
+
+        Date localDateTime = new Date();
+
+        int length = 390;
+        byte count = (byte) ceil(hexString.length()/(float)length);
+        for (byte index = 0; index < count; index++) {
+            int begin = index * length;
+            int end = (index+1) * length;
+            if (end >= hexString.length()) {
+                end = hexString.length();
+            }
+            TxMessage gtMessage = new TxMessage(senderGID, receiverGID, localDateTime, hexString.substring(begin, end),
+                    network, index, count, Message.MessageStatus.SENDING, "");
+
+            sendMessageInteractor.sendMessage(gtMessage, true,
+                new SendMessageInteractor.SendMessageListener() {
+                    @Override
+                    public void onMessageResponseReceived() {
+                    }
+                });
+        }
+
+        gtSentIntent = null;
+        gtDeliveryIntent = null;
     }
 }

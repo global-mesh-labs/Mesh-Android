@@ -470,7 +470,13 @@
     <activity android:name=".MainActivity"
               android:theme="@style/TextSecure.LightNoActionBar"
               android:launchMode="singleTask"
-              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize" />
+              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize">
+        <intent-filter>
+            <action android:name="com.samourai.txtenna.HEX"/>
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="text/plain"/>
+        </intent-filter>
+    </activity>
 
     <service android:enabled="true" android:name="org.thoughtcrime.securesms.service.WebRtcCallService"/>
     <service android:enabled="true" android:name=".service.ApplicationMigrationService"/>
