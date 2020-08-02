@@ -44,6 +44,9 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.thoughtcrime.securesms.groups.GroupId;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -55,6 +58,8 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.ECGenParameterSpec;
 import java.security.Security;
+import java.util.Random;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.ceil;
 
@@ -73,7 +78,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     // Class Properties
     //==============================================================================================
 
-    private static final String GOTENNA_APP_TOKEN = "";// TODO: Insert your token
+    private static final String GOTENNA_APP_TOKEN = "CwMXSRUKGVEDQBdTAxkbQxsDV0ZHUlgDD0MLUQ9VFR4eHQlISUBMWQ4aUQ4dVhFd";// TODO: Insert your token
     private static Context applicationContext;
     private static final String TAG = GTMeshManager.class.getSimpleName();
     private static final boolean WILL_ENCRYPT_MESSAGES = true; // Can optionally encrypt messages using SDK
@@ -407,20 +412,28 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         long senderGID = getGidFromPhoneNumber(localAddress);
         long receiverGID = getGidFromPhoneNumber(destinationAddress);
 
+        // TODO: save/increment nonce instead of using Random() ?
+        //String _id = PrefsUtil.getInstance(context).getValue(PrefsUtil.GOTENNA_UID, "");
+        String _id = Long.toString(senderGID);
+        _id = _id + "|" + (new Random()).nextInt();
+
+        byte uuid[] = null;
+        try {
+            byte[] buf = _id.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            uuid = md.digest(buf);
+        }
+        catch(UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            ;
+        }
+
         Date localDateTime = new Date();
 
-        int length = 390;
-        byte count = (byte) ceil(hexString.length()/(float)length);
-        for (byte index = 0; index < count; index++) {
-            int begin = index * length;
-            int end = (index+1) * length;
-            if (end >= hexString.length()) {
-                end = hexString.length();
-            }
-            TxMessage gtMessage = new TxMessage(senderGID, receiverGID, localDateTime, hexString.substring(begin, end),
-                    network, index, count, Message.MessageStatus.SENDING, "");
+        TxMessage gtMessage = new TxMessage(uuid, senderGID, receiverGID, localDateTime, hexString,
+                network, Message.MessageStatus.SENDING, "");
 
-            sendMessageInteractor.sendMessage(gtMessage, true,
+        for (byte index = 0; index < gtMessage.getSegmentCount(); index++) {
+            sendMessageInteractor.sendMessage(gtMessage, false,
                 new SendMessageInteractor.SendMessageListener() {
                     @Override
                     public void onMessageResponseReceived() {

@@ -13,6 +13,7 @@ import org.jsoup.helper.Validate;
 import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
@@ -192,9 +193,9 @@ public class Message
         String textPayload = gtTextOnlyMessageData.getText();
         long senderGID = gtTextOnlyMessageData.getSenderGID();
         if (gtTextOnlyMessageData.getSenderGID() == 555555555) {
-            // parse first space separated string as the senders phone number
+            // parse first space separated phone number as the senders phone number
             String parts[] = gtTextOnlyMessageData.getText().split(" ", 2);
-            if (parts.length == 2) {
+            if (parts.length == 2 && Pattern.matches("^\\+1[0-9]{10}$", parts[0])) {
                 senderGID = Long.parseLong(parts[0], 10);
                 textPayload = parts[1];
             }
