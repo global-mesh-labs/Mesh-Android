@@ -344,6 +344,10 @@ dependencies {
 
     api (project(':gotenna-public-sdk'))
     implementation 'co.nstant.in:cbor:0.9'
+    implementation ('org.bitcoinj:bitcoinj-core:0.15.1') {
+        exclude group: 'com.google.protobuf'
+    }
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     flipperImplementation 'com.facebook.flipper:flipper:0.32.2'
     flipperImplementation 'com.facebook.soloader:soloader:0.8.2'
