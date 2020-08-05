@@ -7,8 +7,10 @@ import com.gotenna.sdk.exceptions.GTDataMissingException;
 // import com.gotenna.sdk.data.messages.GTBaseMessageData;
 import com.gotenna.sdk.data.messages.GTTextOnlyMessageData;
 // import com.gotenna.sdk.sample.managers.ContactsManager;
+import android.telephony.PhoneNumberUtils;
 
 import org.jsoup.helper.Validate;
+import org.thoughtcrime.securesms.contactshare.Contact;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
@@ -195,7 +197,7 @@ public class Message
         if (gtTextOnlyMessageData.getSenderGID() == 555555555) {
             // parse first space separated phone number as the senders phone number
             String parts[] = gtTextOnlyMessageData.getText().split(" ", 2);
-            if (parts.length == 2 && Pattern.matches("^\\+1[0-9]{10}$", parts[0])) {
+            if (parts.length == 2 && PhoneNumberUtils.isGlobalPhoneNumber(parts[0])) {
                 senderGID = Long.parseLong(parts[0], 10);
                 textPayload = parts[1];
             }
