@@ -78,7 +78,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     // Class Properties
     //==============================================================================================
 
-    private static final String GOTENNA_APP_TOKEN = "CwMXSRUKGVEDQBdTAxkbQxsDV0ZHUlgDD0MLUQ9VFR4eHQlISUBMWQ4aUQ4dVhFd";// TODO: Insert your token
+    private static final String GOTENNA_APP_TOKEN = "";// TODO: Insert your token
     private static Context applicationContext;
     private static final String TAG = GTMeshManager.class.getSimpleName();
     private static final boolean WILL_ENCRYPT_MESSAGES = true; // Can optionally encrypt messages using SDK
@@ -373,7 +373,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         Date localDateTime = new Date();
         SMSMessage gtMessage = new SMSMessage(senderGID, receiverGID, localDateTime, phoneNumber, textMessage, Message.MessageStatus.SENDING, "");
 
-        sendMessageInteractor.sendMessage(gtMessage, true,
+        sendMessageInteractor.sendMessage(gtMessage, false,
                 new SendMessageInteractor.SendMessageListener()
                 {
                     @Override
