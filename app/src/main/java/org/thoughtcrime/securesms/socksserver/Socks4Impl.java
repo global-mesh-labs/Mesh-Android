@@ -1,4 +1,4 @@
-package org.thoughtcrime.securesms.socksserver;;
+package org.thoughtcrime.securesms.socksserver;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
-import static org.bbottema.javasocksproxyserver.Utils.getSocketInfo;
+import static org.thoughtcrime.securesms.socksserver.Utils.getSocketInfo;
 
 public class Socks4Impl {
 
@@ -98,8 +98,8 @@ public class Socks4Impl {
 		m_ServerIP = Utils.calcInetAddress(DST_Addr);
 		m_nServerPort = Utils.calcPort(DST_Port[0], DST_Port[1]);
 
-		m_ClientIP = m_Parent.m_ClientSocket.getInetAddress();
-		m_nClientPort = m_Parent.m_ClientSocket.getPort();
+		m_ClientIP = m_Parent.getClientInetAddress();
+		m_nClientPort = m_Parent.getClientPort();
 
 		return m_ServerIP == null || m_nServerPort < 0;
 	}
@@ -174,10 +174,10 @@ public class Socks4Impl {
 		} catch (IOException e) {
 			refuseCommand(getFailCode()); // Connection Refused
 			throw new Exception("Socks 4 - Can't connect to " +
-					getSocketInfo(m_Parent.m_ServerSocket));
+					getSocketInfo(m_Parent.getServerSocket()));
 		}
 
-		LOGGER.debug("Connected to " + getSocketInfo(m_Parent.m_ServerSocket));
+		LOGGER.debug("Connected to " + getSocketInfo(m_Parent.getServerSocket()));
 		replyCommand(getSuccessCode());
 	}
 
@@ -288,10 +288,10 @@ public class Socks4Impl {
 
 		bindReply((byte) 90, socket.getInetAddress(), socket.getPort());
 
-		m_Parent.m_ServerSocket = socket;
+		m_Parent.setServerSocket(socket);
 		m_Parent.prepareServer();
 
-		LOGGER.debug("BIND Connection from " + getSocketInfo(m_Parent.m_ServerSocket));
+		LOGGER.debug("BIND Connection from " + getSocketInfo(m_Parent.getServerSocket()));
 		ssock.close();
 	}
 

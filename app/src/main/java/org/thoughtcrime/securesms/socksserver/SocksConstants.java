@@ -6,7 +6,7 @@ public interface SocksConstants {
 	int LISTEN_TIMEOUT = 200;
 	int DEFAULT_SERVER_TIMEOUT = 200;
 
-	int DEFAULT_BUF_SIZE = 4096;
+	int DEFAULT_BUF_SIZE = 6000;
 	int DEFAULT_PROXY_TIMEOUT = 10;
 
 	byte SOCKS5_Version = 0x05;

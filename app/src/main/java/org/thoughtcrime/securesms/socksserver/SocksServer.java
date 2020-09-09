@@ -4,24 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class SocksServer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SocksServer.class);
 
 	protected int port;
+	ProxyHandlerFactory proxyHandlerFactory;
 	protected boolean stopping = false;
 
 	public int getPort() {
 		return port;
 	}
 
-	public synchronized void start(int listenPort) {
+	public synchronized void start(int listenPort, ProxyHandlerFactory proxyHandlerFactory) throws NoSuchMethodException {
 		this.stopping = false;
 		this.port = listenPort;
+		this.proxyHandlerFactory = proxyHandlerFactory;
 		new Thread(new ServerProcess()).start();
 	}
 
@@ -40,10 +40,12 @@ public class SocksServer {
 			} catch (IOException e) {
 				LOGGER.debug("SOCKS server crashed...");
 				Thread.currentThread().interrupt();
+			} catch (Exception e) {
+				// ignore
 			}
 		}
 
-		protected void handleClients(int port) throws IOException {
+		protected void handleClients(int port) throws IOException, Exception {
 			final ServerSocket listenSocket = new ServerSocket(port);
 			listenSocket.setSoTimeout(SocksConstants.LISTEN_TIMEOUT);
 			SocksServer.this.port = listenSocket.getLocalPort();
@@ -67,13 +69,9 @@ public class SocksServer {
 
 		private void handleNextClient(ServerSocket listenSocket) {
 			try {
-				final Socket clientSocket = listenSocket.accept();
-				clientSocket.setSoTimeout(SocksConstants.DEFAULT_SERVER_TIMEOUT);
-				LOGGER.debug("Connection from : " + Utils.getSocketInfo(clientSocket));
-				new Thread(new ProxyHandler(clientSocket)).start();
-			} catch (InterruptedIOException e) {
-				//	This exception is thrown when accept timeout is expired
-			} catch (Exception e) {
+				ProxyHandler proxyHandler = proxyHandlerFactory.getInstance(listenSocket);
+				new Thread(proxyHandler).start();
+			} catch(Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
 		}

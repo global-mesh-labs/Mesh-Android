@@ -100,6 +100,8 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
     @Override
     public void onStop() {
         super.onStop();
+        GTConnectionManager.getInstance().removeGtConnectionListener(this);
+        handler.removeCallbacks(scanTimeoutRunnable);
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
@@ -150,6 +152,9 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
     private void internalDisconnect() {
         GTMeshManager gtMeshManager = GTMeshManager.getInstance();
         gtMeshManager.disconnect(this);
+
+        // start timeout handler
+        handler.postDelayed(scanTimeoutRunnable, SCAN_TIMEOUT);
 
         // disable button while disconnecting
         Preference defaultPreference = findPreference(KITKAT_DEFAULT_PREF);
@@ -257,35 +262,9 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
         }
     }
 
-    protected void setGeoloc() {
-        // set the geoloc region to current preference
-        String meshRegion = TextSecurePreferences.getMeshRegion(getContext());
-        GTMeshManager gtMeshManager = GTMeshManager.getInstance();
-        Place place = Place.valueOf((String)meshRegion);
-        android.util.Log.d(TAG, "Set Geoloc Region:" + place.getName());
-        gtMeshManager.setGeoloc(place);
-    }
-
     @Override
     public void onConnectionStateUpdated(@NonNull GTConnectionState gtConnectionState) {
-        switch (gtConnectionState) {
-            case CONNECTED: {
-                android.util.Log.d(TAG, "Connected to device.");
-                // set the geoloc region to current preference
-                setGeoloc();
-            }
-            break;
-            case DISCONNECTED: {
-                android.util.Log.d(TAG, "Disconnected from device.");
-            }
-            break;
-            case SCANNING: {
-                android.util.Log.d(TAG, "Scanning for device.");
-            }
-            break;
-        }
         if (gtConnectionState != GTConnectionState.SCANNING) {
-            //GTConnectionManager.getInstance().removeGtConnectionListener(this);
             handler.removeCallbacks(scanTimeoutRunnable);
             initializeDefaultPreference();
         }
@@ -294,6 +273,7 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
     @Override
     public void onConnectionError(@NonNull GTConnectionState connectionState, @NonNull GTConnectionError error)
     {
+        handler.postDelayed(scanTimeoutRunnable, SCAN_TIMEOUT);
         //view.stopTimeoutCountdown();
         //view.dismissScanningProgressDialog();
 
@@ -329,7 +309,8 @@ public class MeshPreferenceFragment extends ListSummaryPreferenceFragment implem
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(TextSecurePreferences.MESH_REGION_PREF)) {
             // set the geoloc region to current preference
-            setGeoloc();
+            GTMeshManager gtMeshManager = GTMeshManager.getInstance();
+            gtMeshManager.setGeoloc();
 
             ListPreference listPref = (ListPreference) findPreference(TextSecurePreferences.MESH_REGION_PREF);
             String[] regionValues = getResources().getStringArray(R.array.region_values);

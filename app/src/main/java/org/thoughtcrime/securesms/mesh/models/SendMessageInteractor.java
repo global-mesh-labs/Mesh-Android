@@ -87,13 +87,17 @@ public class SendMessageInteractor
             isSending = true;
             SendMessageItem sendMessageItem = messageQueue.get(0);
 
-            if (sendMessageItem.isBroadcast)
-            {
-                sendBroadcast(sendMessageItem);
+            if (sendMessageItem != null) {
+                if (sendMessageItem.isBroadcast) {
+                    sendBroadcast(sendMessageItem);
+                } else {
+                    sendMessage(sendMessageItem);
+                }
             }
-            else
-            {
-                sendMessage(sendMessageItem);
+            else {
+                messageQueue.remove(null);
+                isSending = false;
+                attemptToSendMessage();
             }
         }
     }
@@ -153,7 +157,12 @@ public class SendMessageInteractor
 
     private void sendMessage(final SendMessageItem sendMessageItem)
     {
-        gtCommandCenter.sendMessage(sendMessageItem.message.toBytes(), sendMessageItem.message.getReceiverGID(), new GTSendCommandResponseListener()
+        byte[] data = sendMessageItem.message.toBytes();
+        if (data == null) {
+            markMessageAsSentAndSendNext(sendMessageItem);
+        }
+        else
+        gtCommandCenter.sendMessage(data, sendMessageItem.message.getReceiverGID(), new GTSendCommandResponseListener()
         {
             @Override
             public void onSendResponse(GTSendMessageResponse response)

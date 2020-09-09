@@ -11,9 +11,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Locale;
 
 import static java.lang.String.format;
-import static org.bbottema.javasocksproxyserver.Utils.getSocketInfo;
+import static org.thoughtcrime.securesms.socksserver.Utils.getSocketInfo;
 
 public class Socks5Impl extends Socks4Impl {
 
@@ -84,8 +85,8 @@ public class Socks5Impl extends Socks4Impl {
 		m_ServerIP = calcInetAddress(ADDRESS_TYPE, DST_Addr);
 		m_nServerPort = Utils.calcPort(DST_Port[0], DST_Port[1]);
 
-		m_ClientIP = m_Parent.m_ClientSocket.getInetAddress();
-		m_nClientPort = m_Parent.m_ClientSocket.getPort();
+		m_ClientIP = m_Parent.getClientInetAddress();
+		m_nClientPort = m_Parent.getClientPort();
 
 		return !((m_ServerIP != null) && (m_nServerPort >= 0));
 	}
@@ -192,8 +193,8 @@ public class Socks5Impl extends Socks4Impl {
 		byte[] REPLY = new byte[10];
 		byte[] IP = new byte[4];
 
-		if (m_Parent.m_ServerSocket != null) {
-			pt = m_Parent.m_ServerSocket.getLocalPort();
+		if (m_Parent.getServerSocket() != null) {
+			pt = m_Parent.getServerSocket().getLocalPort();
 		} else {
 			IP[0] = 0;
 			IP[1] = 0;
@@ -227,7 +228,7 @@ public class Socks5Impl extends Socks4Impl {
 	public void udpReply(byte replyCode, InetAddress IA, int pt) {
 		LOGGER.debug("Reply to Client \"" + replyName(replyCode) + "\"");
 
-		if (m_Parent.m_ClientSocket == null) {
+		if (m_Parent.getServerSocket() == null) {
 			LOGGER.debug("Error in UDP_Reply() - Client socket is NULL");
 		}
 		byte[] IP = IA.getAddress();
@@ -262,7 +263,7 @@ public class Socks5Impl extends Socks4Impl {
 			throw new IOException("Connection Refused - FAILED TO INITIALIZE UDP Association.");
 		}
 
-		InetAddress MyIP = m_Parent.m_ClientSocket.getLocalAddress();
+		InetAddress MyIP = m_Parent.getServerSocket().getLocalAddress();
 		int MyPort = DGSocket.getLocalPort();
 
 		//	Return response to the Client
@@ -281,8 +282,8 @@ public class Socks5Impl extends Socks4Impl {
 
 	private void initUdpInOut() throws IOException {
 		DGSocket.setSoTimeout(SocksConstants.DEFAULT_PROXY_TIMEOUT);
-		m_Parent.m_Buffer = new byte[SocksConstants.DEFAULT_BUF_SIZE];
-		DGPack = new DatagramPacket(m_Parent.m_Buffer, SocksConstants.DEFAULT_BUF_SIZE);
+		m_Parent.setBuffer( new byte[SocksConstants.DEFAULT_BUF_SIZE] );
+		DGPack = new DatagramPacket(m_Parent.getBuffer(), SocksConstants.DEFAULT_BUF_SIZE);
 	}
 
 	@NotNull
@@ -424,7 +425,7 @@ public class Socks5Impl extends Socks4Impl {
 
 
 	public void processUdpRemote() {
-		LOGGER.debug(format("Datagram : %d bytes : <%s:%d> << %s",
+		LOGGER.debug(format(Locale.ENGLISH,"Datagram : %d bytes : <%s:%d> << %s",
 				DGPack.getLength(), Utils.iP2Str(m_ClientIP), m_nClientPort, getSocketInfo(DGPack)));
 
 		// This Method must be CALL only from <ProcessUDP()>
@@ -433,7 +434,7 @@ public class Socks5Impl extends Socks4Impl {
 		InetAddress DGP_IP = DGPack.getAddress();
 		int DGP_Port = DGPack.getPort();
 
-		final byte[] Buf = addDgpHead(m_Parent.m_Buffer);
+		final byte[] Buf = addDgpHead(m_Parent.getBuffer());
 
 		// SendTo Client
 		DatagramPacket DGPSend = new DatagramPacket(Buf, Buf.length,

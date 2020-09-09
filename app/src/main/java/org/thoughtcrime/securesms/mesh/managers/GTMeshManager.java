@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.gotenna.sdk.GoTenna;
@@ -28,23 +29,25 @@ import com.gotenna.sdk.data.messages.GTTextOnlyMessageData;
 import com.gotenna.sdk.data.GTResponse;
 import com.gotenna.sdk.data.GTDeviceType;
 import com.gotenna.sdk.connection.GTConnectionState;
+import com.gotenna.sdk.connection.GTConnectionError;
 
+import org.thoughtcrime.securesms.socksserver.SocksServer;
 import org.thoughtcrime.securesms.mesh.models.SMSMessage;
-import org.thoughtcrime.securesms.mesh.models.SendMessageInteractor;
 
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.database.MessagingDatabase;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.mesh.models.Message;
+import org.thoughtcrime.securesms.mesh.models.SendMessageInteractor;
 import org.thoughtcrime.securesms.mesh.models.TxMessage;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.sms.IncomingTextMessage;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.whispersystems.libsignal.util.guava.Optional;
-import org.thoughtcrime.securesms.groups.GroupId;
 
 import java.io.UnsupportedEncodingException;
+import java.net.ServerSocket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -52,16 +55,8 @@ import java.util.Date;
 
 
 // TEST TEST TEST
-import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
-import org.spongycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.spec.ECGenParameterSpec;
 import java.security.Security;
 import java.util.Random;
-import java.util.regex.Pattern;
-
-import static java.lang.Math.ceil;
 
 /**
  * A singleton that manages listening for incoming messages from the SDK and parses them into
@@ -72,7 +67,7 @@ import static java.lang.Math.ceil;
  *
  * @author ThomasColligan, RichardMyers
  */
-public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTCommand.GTCommandResponseListener, GTErrorListener
+public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTCommand.GTCommandResponseListener, GTErrorListener, GTConnectionManager.GTConnectionListener
 {
     //==============================================================================================
     // Class Properties
@@ -97,11 +92,17 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
     private final ArrayList<IncomingMessageListener> incomingMessageListeners;
 
-    private  SendMessageInteractor sendMessageInteractor;
+    private SendMessageInteractor sendMessageInteractor;
 
     // set in
     private PendingIntent gtSentIntent;
     private PendingIntent gtDeliveryIntent;
+
+    // socks4/5 proxy server
+    SocksServer proxyServer = null;
+
+    // LND (test) mesh socket server
+    MeshSocketServer meshSocketServer = null;
 
     //==============================================================================================
     // Singleton Methods
@@ -136,15 +137,34 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         applicationContext = context;
         try {
             GoTenna.setApplicationToken(applicationContext, GOTENNA_APP_TOKEN);
-            if(GoTenna.tokenIsVerified())    {
+            if(GoTenna.tokenIsVerified()) {
                 Log.d(TAG, "goTenna token is verified:" + GoTenna.tokenIsVerified());
-            }
-            gtConnectionManager = GTConnectionManager.getInstance();
-            startListening();
 
-            sendMessageInteractor = new SendMessageInteractor();
+                gtConnectionManager = GTConnectionManager.getInstance();
+                startListening();
+
+                sendMessageInteractor = new SendMessageInteractor();
+
+                // automatically connect to mesh
+                if (!isPaired()) {
+                    connect(this);
+                }
+            }
         }
         catch(GTInvalidAppTokenException e) {
+            e.printStackTrace();
+        }
+
+        // forward traffic on port 1337 to the mesh Internet gateway
+        try {
+            // to create SOCKS server proxy to mesh gateway
+            proxyServer = new SocksServer();
+            proxyServer.start(8888, new MeshProxyHandlerFactory(sendMessageInteractor));
+
+            // to test LND between two mesh nodes laptop IP = 192.168.86.56, where LND node 2 listens on port 9734 for p2p connections
+            // meshSocketServer = new MeshSocketServer(8888, "192.168.86.56", 9734, sendMessageInteractor);
+        }
+        catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
@@ -238,29 +258,32 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     // derived from SmsReceiveJob.storeMessage
     public Optional<MessagingDatabase.InsertResult> storeMessage(final Message gtMessage)
     {
-        SmsDatabase database = DatabaseFactory.getSmsDatabase(applicationContext);
-        database.ensureMigration();
+        if (gtMessage instanceof SMSMessage) {
+            SmsDatabase database = DatabaseFactory.getSmsDatabase(applicationContext);
+            database.ensureMigration();
 
-        if (TextSecurePreferences.getNeedsSqlCipherMigration(applicationContext)) {
-            // TODO: throw new SmsReceiveJob.MigrationPendingException();
+            if (TextSecurePreferences.getNeedsSqlCipherMigration(applicationContext)) {
+                // TODO: throw new SmsReceiveJob.MigrationPendingException();
+            }
+
+            final String senderGID = "+" + Long.toString(gtMessage.getSenderGID());
+            Log.d(TAG, "storeMessage from sender GID:" + senderGID);
+
+            Recipient recipient = Recipient.external(applicationContext, senderGID);
+            RecipientId sender = recipient.getId();
+            IncomingTextMessage message = new IncomingTextMessage(sender, 0, System.currentTimeMillis(), gtMessage.getText(), Optional.absent(), 0, false);
+
+            if (message.isSecureMessage()) {
+                IncomingTextMessage placeholder = new IncomingTextMessage(message, "");
+                Optional<MessagingDatabase.InsertResult> insertResult = database.insertMessageInbox(placeholder);
+                database.markAsLegacyVersion(insertResult.get().getMessageId());
+
+                return insertResult;
+            } else {
+                return database.insertMessageInbox(message);
+            }
         }
-
-        final String senderGID = "+" + Long.toString(gtMessage.getSenderGID());
-        Log.d(TAG, "storeMessage from sender GID:" + senderGID);
-
-        Recipient recipient = Recipient.external(applicationContext, senderGID);
-        RecipientId sender = recipient.getId();
-        IncomingTextMessage message = new IncomingTextMessage(sender, 0, System.currentTimeMillis(), gtMessage.getText(), Optional.absent(),0,false);
-    
-        if (message.isSecureMessage()) {
-          IncomingTextMessage placeholder  = new IncomingTextMessage(message, "");
-          Optional<MessagingDatabase.InsertResult> insertResult = database.insertMessageInbox(placeholder);
-          database.markAsLegacyVersion(insertResult.get().getMessageId());
-    
-          return insertResult;
-        } else {
-          return database.insertMessageInbox(message);
-        }
+        return Optional.absent();
     }
 
     public boolean isPaired()  {
@@ -303,6 +326,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         if (listener != null) {
             gtConnectionManager.addGtConnectionListener(listener);
         }
+        gtConnectionManager.addGtConnectionListener(this);
         gtConnectionManager.disconnect();
     }
 
@@ -312,6 +336,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
             if (listener != null) {
                 gtConnectionManager.addGtConnectionListener(listener);
             }
+            gtConnectionManager.addGtConnectionListener(this);
             gtConnectionManager.clearConnectedGotennaAddress();
             gtConnectionManager.scanAndConnect(GTDeviceType.MESH);
         }
@@ -443,5 +468,58 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
 
         gtSentIntent = null;
         gtDeliveryIntent = null;
+    }
+
+    public void setGeoloc() {
+        // set the geoloc region to current preference
+        String meshRegion = TextSecurePreferences.getMeshRegion(applicationContext);
+        Place place = Place.valueOf((String)meshRegion);
+        android.util.Log.d(TAG, "Set Geoloc Region:" + place.getName());
+        setGeoloc(place);
+    }
+
+    @Override
+    public void onConnectionStateUpdated(@NonNull GTConnectionState gtConnectionState) {
+        switch (gtConnectionState) {
+            case CONNECTED: {
+                android.util.Log.d(TAG, "Connected to device.");
+                setGeoloc();
+                //meshSocketServer.startServer();
+            }
+            break;
+            case DISCONNECTED: {
+                android.util.Log.d(TAG, "Disconnected from device.");
+                //meshSocketServer.stopServer();
+                GTConnectionManager.getInstance().removeGtConnectionListener(this);
+            }
+            break;
+            case SCANNING: {
+                android.util.Log.d(TAG, "Scanning for device.");
+            }
+            break;
+        }
+    }
+
+    @Override
+    public void onConnectionError(@NonNull GTConnectionState connectionState, @NonNull GTConnectionError error)
+    {
+        switch (error.getErrorState())
+        {
+            case X_UPGRADE_CHECK_FAILED:
+                /*
+                    This error gets passed when we failed to check if the device is goTenna X. This
+                    could happen due to connectivity issues with the device or error checking if the
+                    device has been remotely upgraded.
+                 */
+                //view.showXCheckError();
+                break;
+            case NOT_X_DEVICE_ERROR:
+                /*
+                    This device is confirmed not to be a goTenna X device. Using error.getDetailString()
+                    you can pull the serial number of the connected device.
+                 */
+                //view.showNotXDeviceWarning(error.getDetailString());
+                break;
+        }
     }
 }

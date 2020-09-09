@@ -25,3 +25,7 @@ obj/
 jni/libspeex/.deps/
 *.sh
 pkcs11.password
+.venv/
+gotenna-public-sdk/.venv/
+gotenna-public-sdk/.goTenna
+__pycache__
