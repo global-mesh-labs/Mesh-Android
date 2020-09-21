@@ -7,7 +7,7 @@ import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import android.util.AttributeSet;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public class SwitchPreferenceCompat extends CheckBoxPreference {
 

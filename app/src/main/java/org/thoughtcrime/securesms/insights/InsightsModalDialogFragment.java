@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.components.ArcProgressBar;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 

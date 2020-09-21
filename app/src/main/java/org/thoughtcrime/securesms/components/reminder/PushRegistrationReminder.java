@@ -2,7 +2,7 @@ package org.thoughtcrime.securesms.components.reminder;
 
 import android.content.Context;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.registration.RegistrationNavigationActivity;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 

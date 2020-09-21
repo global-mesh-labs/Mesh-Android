@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.thoughtcrime.securesms.devicelist.Device;
 import org.thoughtcrime.securesms.util.DateUtils;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.Locale;
 

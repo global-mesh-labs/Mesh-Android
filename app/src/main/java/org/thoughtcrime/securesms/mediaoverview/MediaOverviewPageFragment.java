@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.codewaves.stickyheadergrid.StickyHeaderGridLayoutManager;
 
 import org.thoughtcrime.securesms.MediaPreviewActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment;
 import org.thoughtcrime.securesms.database.MediaDatabase;
 import org.thoughtcrime.securesms.database.loaders.GroupedThreadMediaLoader;

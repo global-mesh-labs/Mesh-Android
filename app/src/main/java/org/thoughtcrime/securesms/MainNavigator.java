@@ -15,6 +15,8 @@ import org.thoughtcrime.securesms.conversationlist.ConversationListFragment;
 import org.thoughtcrime.securesms.insights.InsightsLauncher;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 
+import org.globalmeshlabs.securesms.R;
+
 public class MainNavigator {
 
   private final MainActivity activity;

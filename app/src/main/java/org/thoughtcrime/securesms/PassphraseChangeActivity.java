@@ -32,6 +32,7 @@ import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * Activity for changing a user's local encryption passphrase.

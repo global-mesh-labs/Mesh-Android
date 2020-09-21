@@ -88,6 +88,7 @@ import org.thoughtcrime.securesms.util.concurrent.ListenableFuture;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.concurrent.ExecutionException;
 

@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public final class KbsSplashFragment extends Fragment {
 

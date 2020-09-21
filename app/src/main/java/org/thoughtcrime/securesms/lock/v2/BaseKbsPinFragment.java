@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.util.text.AfterTextChanged;
 
 abstract class BaseKbsPinFragment<ViewModel extends BaseKbsPinViewModel> extends Fragment {

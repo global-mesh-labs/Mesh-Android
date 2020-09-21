@@ -42,6 +42,7 @@ import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile;
 import org.whispersystems.signalservice.api.util.UuidUtil;
+import org.globalmeshlabs.securesms.R;
 
 import java.io.IOException;
 import java.util.UUID;

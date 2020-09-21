@@ -16,7 +16,7 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;

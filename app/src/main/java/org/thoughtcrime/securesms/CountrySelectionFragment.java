@@ -17,6 +17,7 @@ import android.widget.SimpleAdapter;
 
 
 import org.thoughtcrime.securesms.database.loaders.CountryListLoader;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.ArrayList;
 import java.util.Map;

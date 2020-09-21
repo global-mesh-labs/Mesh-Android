@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.Locale;
 

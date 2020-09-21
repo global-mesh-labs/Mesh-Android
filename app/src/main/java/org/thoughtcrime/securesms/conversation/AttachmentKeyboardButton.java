@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.conversation;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public enum AttachmentKeyboardButton {
 

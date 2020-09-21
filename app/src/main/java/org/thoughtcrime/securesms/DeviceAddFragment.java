@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.components.camera.CameraView;
 import org.thoughtcrime.securesms.qr.ScanListener;
 import org.thoughtcrime.securesms.qr.ScanningThread;
 import org.thoughtcrime.securesms.util.ViewUtil;
+import org.globalmeshlabs.securesms.R;
 
 public class DeviceAddFragment extends Fragment {
 

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import android.view.Window;
 
+import org.globalmeshlabs.securesms.R;
+
 public class DeviceProvisioningActivity extends PassphraseRequiredActionBarActivity {
 
   @SuppressWarnings("unused")

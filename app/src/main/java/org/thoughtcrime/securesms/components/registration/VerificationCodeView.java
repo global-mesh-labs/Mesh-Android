@@ -20,7 +20,7 @@ import androidx.annotation.RequiresApi;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.ArrayList;
 import java.util.List;

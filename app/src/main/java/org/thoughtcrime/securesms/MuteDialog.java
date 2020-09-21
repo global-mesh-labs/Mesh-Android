@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import org.globalmeshlabs.securesms.R;
+
 import java.util.concurrent.TimeUnit;
 
 public class MuteDialog extends AlertDialog {

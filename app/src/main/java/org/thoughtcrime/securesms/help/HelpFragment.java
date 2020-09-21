@@ -24,8 +24,8 @@ import com.annimon.stream.Stream;
 import com.dd.CircularProgressButton;
 
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
-import org.thoughtcrime.securesms.BuildConfig;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.BuildConfig;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.EmojiImageView;
 import org.thoughtcrime.securesms.util.IntentUtils;
 import org.thoughtcrime.securesms.util.text.AfterTextChanged;

@@ -20,7 +20,7 @@ package org.thoughtcrime.securesms.migrations;
 import android.os.Bundle;
 
 import org.thoughtcrime.securesms.BaseActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.logging.Log;
 
 /**

@@ -17,7 +17,7 @@ import android.os.PowerManager.WakeLock;
 import androidx.core.app.NotificationCompat;
 
 import org.thoughtcrime.securesms.MainActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.database.SmsMigrator;
 import org.thoughtcrime.securesms.database.SmsMigrator.ProgressDescription;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;

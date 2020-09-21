@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Signal</string>
+    <string name="app_name" translatable="false">Mesh</string>
 
     <string name="install_url" translatable="false">https://signal.org/install</string>
 
@@ -220,6 +220,8 @@
     <string name="ConversationActivity_transport_insecure_sms">Insecure SMS</string>
     <string name="ConversationActivity_transport_insecure_mms">Insecure MMS</string>
     <string name="ConversationActivity_transport_signal">Signal</string>
+    <string name="ConversationActivity_transport_mesh">Mesh</string>
+    <string name="ConversationActivity_transport_sms_gateway">SMS Gateway</string>
     <string name="ConversationActivity_lets_switch_to_signal">Let\'s switch to Signal %1$s</string>
     <string name="ConversationActivity_error_leaving_group">Error leaving group</string>
     <string name="ConversationActivity_specify_recipient">Please choose a contact</string>
@@ -1145,6 +1147,8 @@
     <string name="conversation_activity__type_message_push">Signal message</string>
     <string name="conversation_activity__type_message_sms_insecure">Unsecured SMS</string>
     <string name="conversation_activity__type_message_mms_insecure">Unsecured MMS</string>
+    <string name="conversation_activity__type_message_mesh">Mesh</string>
+    <string name="conversation_activity__type_message_sms_gateway">SMS Gateway</string>
     <string name="conversation_activity__from_sim_name">From %1$s</string>
     <string name="conversation_activity__sim_n">SIM %1$d</string>
     <string name="conversation_activity__send">Send</string>

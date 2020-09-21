@@ -11,7 +11,7 @@ import androidx.annotation.UiThread;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.mms.GlideRequest;
 import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.util.ThemeUtil;

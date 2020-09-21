@@ -51,6 +51,7 @@ import org.thoughtcrime.securesms.util.ViewUtil;
 import org.webrtc.SurfaceViewRenderer;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.globalmeshlabs.securesms.R;
 
 import static org.whispersystems.libsignal.SessionCipher.SESSION_LOCK;
 

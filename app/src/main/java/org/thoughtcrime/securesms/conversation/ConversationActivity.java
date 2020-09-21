@@ -87,7 +87,7 @@ import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.MuteDialog;
 import org.thoughtcrime.securesms.PassphraseRequiredActionBarActivity;
 import org.thoughtcrime.securesms.PromptMmsActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.RecipientPreferenceActivity;
 import org.thoughtcrime.securesms.ShortcutLauncherActivity;
 import org.thoughtcrime.securesms.TransportOption;
@@ -1027,7 +1027,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
         final Context context = getApplicationContext();
 
         OutgoingEndSessionMessage endSessionMessage =
-            new OutgoingEndSessionMessage(new OutgoingTextMessage(getRecipient(), "TERMINATE", 0, -1));
+            new OutgoingEndSessionMessage(new OutgoingTextMessage(getRecipient(), "TERMINATE", 0, -1, 0));
 
         new AsyncTask<OutgoingEndSessionMessage, Void, Long>() {
           @Override
@@ -2227,7 +2227,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
       String          message        = getMessage();
       TransportOption transport      = sendButton.getSelectedTransport();
-      boolean         forceSms       = (recipient.isForceSmsSelection() || sendButton.isManualSelection()) && transport.isSms();
+      boolean         forceSms       = (recipient.isForceSmsSelection() || sendButton.isManualSelection()) && !transport.isSignal();
       int             subscriptionId = sendButton.getSelectedTransport().getSimSubscriptionId().or(-1);
       long            expiresIn      = recipient.getExpireMessages() * 1000L;
       boolean         initiating     = threadId == -1;
@@ -2341,11 +2341,11 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       outgoingMessage = outgoingMessageCandidate;
     }
 
-    Permissions.with(this)
-               .request(Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS)
-               .ifNecessary(!isSecureText || forceSms)
-               .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
-               .onAllGranted(() -> {
+    //Permissions.with(this)
+               //.request(Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS)
+               //.ifNecessary(!isSecureText || forceSms)
+               //.withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
+               //.onAllGranted(() -> {
                  if (clearComposeBox) {
                    inputPanel.clearQuote();
                    attachmentManager.clear(glideRequests, false);
@@ -2364,9 +2364,9 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                    sendComplete(result);
                    future.set(null);
                  });
-               })
-               .onAnyDenied(() -> future.set(null))
-               .execute();
+               //})
+               //.onAnyDenied(() -> future.set(null))
+               //.execute();
 
     return future;
   }
@@ -2374,28 +2374,36 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   private void sendTextMessage(final boolean forceSms, final long expiresIn, final int subscriptionId, final boolean initiating)
       throws InvalidMessageException
   {
-    if (!isDefaultSms && (!isSecureText || forceSms)) {
+
+    final Context context     = getApplicationContext();
+    final String  messageBody = getMessage();
+    final boolean isSMS = sendButton.getSelectedTransport().isSms();
+    final boolean isMesh = sendButton.getSelectedTransport().isMesh();
+    final boolean isSMSGateway = sendButton.getSelectedTransport().isSMSGateway();
+
+    if (!isMesh && !isSMSGateway && !isDefaultSms && (!isSecureText || forceSms)) {
       showDefaultSmsPrompt();
       return;
     }
 
-    final Context context     = getApplicationContext();
-    final String  messageBody = getMessage();
-
     OutgoingTextMessage message;
 
-    if (isSecureText && !forceSms) {
+    if (isSMS) {
+      message = new OutgoingTextMessage(recipient.get(), messageBody, expiresIn, subscriptionId, Types.getOutgoingSmsMessageType());
+    } else if (isMesh) {
+      message = new OutgoingTextMessage(recipient.get(), messageBody, expiresIn, subscriptionId, Types.getOutgoingMeshMessageType());
+    } else if (isSMSGateway) {
+      message = new OutgoingTextMessage(recipient.get(), messageBody, expiresIn, subscriptionId, Types.getOutgoingGatewayMessageType());
+    } else {
       message = new OutgoingEncryptedMessage(recipient.get(), messageBody, expiresIn);
       ApplicationContext.getInstance(context).getTypingStatusSender().onTypingStopped(threadId);
-    } else {
-      message = new OutgoingTextMessage(recipient.get(), messageBody, expiresIn, subscriptionId);
     }
 
-    Permissions.with(this)
-               .request(Manifest.permission.SEND_SMS)
-               .ifNecessary(forceSms || !isSecureText)
-               .withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
-               .onAllGranted(() -> {
+    //Permissions.with(this)
+               //.request(Manifest.permission.SEND_SMS)
+               //.ifNecessary(forceSms || !isSecureText)
+               //.withPermanentDenialDialog(getString(R.string.ConversationActivity_signal_needs_sms_permission_in_order_to_send_an_sms))
+               //.onAllGranted(() -> {
                  silentlySetComposeText("");
                  final long id = fragment.stageOutgoingMessage(message);
 
@@ -2415,8 +2423,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                    }
                  }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, message);
 
-               })
-               .execute();
+               //})
+               //.execute();
   }
 
   private void showDefaultSmsPrompt() {

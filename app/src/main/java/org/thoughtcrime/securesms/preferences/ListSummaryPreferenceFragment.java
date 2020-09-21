@@ -4,7 +4,7 @@ package org.thoughtcrime.securesms.preferences;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.Arrays;
 

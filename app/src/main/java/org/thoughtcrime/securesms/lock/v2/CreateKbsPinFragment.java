@@ -5,7 +5,7 @@ import androidx.annotation.PluralsRes;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public class CreateKbsPinFragment extends BaseKbsPinFragment<CreateKbsPinViewModel> {
 

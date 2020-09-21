@@ -2,7 +2,7 @@ package org.thoughtcrime.securesms.util;
 
 import androidx.annotation.StyleRes;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public class DynamicIntroTheme extends DynamicTheme {
 

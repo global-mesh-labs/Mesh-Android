@@ -28,6 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.globalmeshlabs.securesms.R;
+
 public class PlayServicesProblemFragment extends DialogFragment {
 
   @Override

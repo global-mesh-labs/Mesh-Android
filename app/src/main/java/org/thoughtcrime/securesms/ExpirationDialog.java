@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.thoughtcrime.securesms.util.ExpirationUtil;
+import org.globalmeshlabs.securesms.R;
 
 import cn.carbswang.android.numberpickerview.library.NumberPickerView;
 

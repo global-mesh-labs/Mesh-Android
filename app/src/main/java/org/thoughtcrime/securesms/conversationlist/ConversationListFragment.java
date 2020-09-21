@@ -76,7 +76,7 @@ import org.thoughtcrime.securesms.ApplicationContext;
 import org.thoughtcrime.securesms.MainFragment;
 import org.thoughtcrime.securesms.MainNavigator;
 import org.thoughtcrime.securesms.NewConversationActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.components.RatingManager;
 import org.thoughtcrime.securesms.components.SearchToolbar;
 import org.thoughtcrime.securesms.components.recyclerview.DeleteItemAnimator;
@@ -541,8 +541,8 @@ public class ConversationListFragment extends MainFragment implements LoaderMana
         return Optional.of(new ServiceOutageReminder(context));
       } else if (OutdatedBuildReminder.isEligible()) {
         return Optional.of(new OutdatedBuildReminder(context));
-      } else if (DefaultSmsReminder.isEligible(context)) {
-        return Optional.of(new DefaultSmsReminder(context));
+//      } else if (DefaultSmsReminder.isEligible(context)) {
+//        return Optional.of(new DefaultSmsReminder(context));
       } else if (Util.isDefaultSmsProvider(context) && SystemSmsImportReminder.isEligible(context)) {
         return Optional.of((new SystemSmsImportReminder(context)));
       } else if (PushRegistrationReminder.isEligible(context)) {

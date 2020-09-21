@@ -31,7 +31,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.codewaves.stickyheadergrid.StickyHeaderGridAdapter;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.attachments.AttachmentId;
 import org.thoughtcrime.securesms.components.AudioView;
 import org.thoughtcrime.securesms.components.ThumbnailView;

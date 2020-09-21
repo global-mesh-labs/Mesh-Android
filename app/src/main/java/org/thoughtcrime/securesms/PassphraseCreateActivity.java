@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.VersionTracker;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * Activity for creating a user's local encryption passphrase.

@@ -14,7 +14,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 
 import org.greenrobot.eventbus.EventBus;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.service.VerificationCodeParser;
 import org.whispersystems.libsignal.util.guava.Optional;

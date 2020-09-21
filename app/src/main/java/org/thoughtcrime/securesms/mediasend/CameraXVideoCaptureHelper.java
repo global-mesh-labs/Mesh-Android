@@ -18,7 +18,7 @@ import com.bumptech.glide.util.Executors;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.mediasend.camerax.CameraXView;
 import org.thoughtcrime.securesms.mediasend.camerax.VideoCapture;
 import org.thoughtcrime.securesms.permissions.Permissions;

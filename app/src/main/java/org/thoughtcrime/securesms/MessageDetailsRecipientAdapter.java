@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.Conversions;
 import org.thoughtcrime.securesms.util.adapter.StableIdGenerator;
+import org.globalmeshlabs.securesms.R;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

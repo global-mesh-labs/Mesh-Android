@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.dd.CircularProgressButton;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity;
 import org.thoughtcrime.securesms.registration.viewmodel.RegistrationViewModel;
 

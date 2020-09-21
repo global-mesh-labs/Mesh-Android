@@ -77,6 +77,7 @@ import org.thoughtcrime.securesms.util.ViewUtil;
 import org.thoughtcrime.securesms.util.task.ProgressDialogAsyncTask;
 import org.whispersystems.libsignal.util.guava.Optional;
 import org.whispersystems.signalservice.api.util.InvalidNumberException;
+import org.globalmeshlabs.securesms.R;
 
 import java.io.IOException;
 import java.util.Collection;

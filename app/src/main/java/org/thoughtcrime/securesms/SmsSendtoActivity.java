@@ -15,6 +15,7 @@ import android.widget.Toast;
 import org.thoughtcrime.securesms.database.DatabaseFactory;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.Rfc5724Uri;
+import org.globalmeshlabs.securesms.R;
 
 import java.net.URISyntaxException;
 

@@ -74,6 +74,7 @@ import org.webrtc.voiceengine.WebRtcAudioManager;
 import org.webrtc.voiceengine.WebRtcAudioUtils;
 import org.whispersystems.libsignal.logging.SignalProtocolLoggerProvider;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
+import org.globalmeshlabs.securesms.BuildConfig;
 
 import java.security.Security;
 import java.util.HashSet;

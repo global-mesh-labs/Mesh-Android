@@ -36,7 +36,7 @@ import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.DummyActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.crypto.InvalidPassphraseException;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;

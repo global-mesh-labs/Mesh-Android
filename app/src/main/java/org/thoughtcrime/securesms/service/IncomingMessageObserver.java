@@ -22,7 +22,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraintObserver;
 import org.thoughtcrime.securesms.logging.Log;
 
 import org.thoughtcrime.securesms.ApplicationContext;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 import org.thoughtcrime.securesms.mesh.models.Message;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;

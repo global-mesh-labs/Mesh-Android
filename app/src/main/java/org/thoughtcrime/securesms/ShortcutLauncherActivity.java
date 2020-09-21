@@ -12,6 +12,7 @@ import android.widget.Toast;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.CommunicationActions;
+import org.globalmeshlabs.securesms.R;
 
 public class ShortcutLauncherActivity extends AppCompatActivity {
 

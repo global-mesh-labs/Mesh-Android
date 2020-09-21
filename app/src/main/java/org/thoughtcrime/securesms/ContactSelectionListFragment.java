@@ -64,6 +64,7 @@ import org.thoughtcrime.securesms.util.adapter.RecyclerViewConcatenateAdapterSti
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.globalmeshlabs.securesms.R;
 
 import java.io.IOException;
 import java.util.LinkedList;

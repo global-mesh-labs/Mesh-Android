@@ -39,6 +39,7 @@ import org.thoughtcrime.securesms.mms.GlideRequests;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientForeverObserver;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * A simple view to show the recipients of a message

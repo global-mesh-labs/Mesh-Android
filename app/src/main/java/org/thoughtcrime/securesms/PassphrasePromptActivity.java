@@ -59,6 +59,7 @@ import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogActivity;
 import org.thoughtcrime.securesms.util.DynamicIntroTheme;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * Activity that prompts for a user's passphrase.

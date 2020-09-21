@@ -63,6 +63,7 @@ import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.ExpirationUtil;
 import org.thoughtcrime.securesms.util.Util;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.globalmeshlabs.securesms.R;
 
 import java.lang.ref.WeakReference;
 import java.sql.Date;

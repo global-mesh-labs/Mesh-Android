@@ -30,7 +30,7 @@ import com.gotenna.sdk.data.GTResponse;
 import com.gotenna.sdk.data.Place;
 
 import org.thoughtcrime.securesms.ApplicationPreferencesActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.logging.Log;
 import org.thoughtcrime.securesms.mesh.managers.GTMeshManager;
 import org.thoughtcrime.securesms.permissions.Permissions;

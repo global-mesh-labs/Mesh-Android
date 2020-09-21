@@ -27,6 +27,7 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
+import org.globalmeshlabs.securesms.R;
 
 public class BlockedContactsActivity extends PassphraseRequiredActionBarActivity {
 

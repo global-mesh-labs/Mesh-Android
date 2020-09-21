@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.groups.ui.GroupMemberListView;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientExporter;
 import org.thoughtcrime.securesms.util.concurrent.SimpleTask;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.ArrayList;
 

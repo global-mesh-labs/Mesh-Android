@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.imageeditor.Bounds;
 import org.thoughtcrime.securesms.imageeditor.renderers.CropAreaRenderer;
 import org.thoughtcrime.securesms.imageeditor.renderers.InverseFillRenderer;

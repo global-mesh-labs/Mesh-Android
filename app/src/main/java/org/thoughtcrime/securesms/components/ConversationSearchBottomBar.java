@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * Bottom navigation bar shown in the {@link org.thoughtcrime.securesms.conversation.ConversationActivity}

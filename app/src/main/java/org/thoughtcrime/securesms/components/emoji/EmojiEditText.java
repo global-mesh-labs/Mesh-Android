@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import android.text.InputFilter;
 import android.util.AttributeSet;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.EmojiProvider.EmojiDrawable;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 

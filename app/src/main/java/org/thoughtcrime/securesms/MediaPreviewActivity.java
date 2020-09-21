@@ -69,6 +69,7 @@ import org.thoughtcrime.securesms.util.AttachmentUtil;
 import org.thoughtcrime.securesms.util.DateUtils;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask.Attachment;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.HashMap;
 import java.util.Locale;

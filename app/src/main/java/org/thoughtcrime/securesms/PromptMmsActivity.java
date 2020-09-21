@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import org.globalmeshlabs.securesms.R;
 
 import org.thoughtcrime.securesms.preferences.MmsPreferencesActivity;
 

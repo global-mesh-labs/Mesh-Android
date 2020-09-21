@@ -47,6 +47,8 @@ import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ThemeUtil;
 
+import org.globalmeshlabs.securesms.R;
+
 /**
  * The Activity for application preference display and management.
  *

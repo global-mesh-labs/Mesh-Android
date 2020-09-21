@@ -7,7 +7,7 @@ import android.view.View.OnClickListener;
 
 import org.thoughtcrime.securesms.DatabaseMigrationActivity;
 import org.thoughtcrime.securesms.MainActivity;
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.service.ApplicationMigrationService;
 
 public class SystemSmsImportReminder extends Reminder {

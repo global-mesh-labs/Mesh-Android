@@ -34,6 +34,7 @@ import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.ViewUtil;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.globalmeshlabs.securesms.R;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;

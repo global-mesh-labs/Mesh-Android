@@ -24,7 +24,7 @@ import androidx.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 /**
  * List preference that disables dependents when set to "none", similar to a CheckBoxPreference.

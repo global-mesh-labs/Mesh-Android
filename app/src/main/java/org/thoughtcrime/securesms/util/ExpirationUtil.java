@@ -2,7 +2,7 @@ package org.thoughtcrime.securesms.util;
 
 import android.content.Context;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.concurrent.TimeUnit;
 

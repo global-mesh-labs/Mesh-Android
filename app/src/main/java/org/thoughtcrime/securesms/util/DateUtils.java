@@ -21,7 +21,7 @@ import android.text.format.DateFormat;
 
 import androidx.annotation.NonNull;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

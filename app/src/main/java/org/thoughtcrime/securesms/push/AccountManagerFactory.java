@@ -9,7 +9,7 @@ import org.thoughtcrime.securesms.logging.Log;
 
 import com.google.android.gms.security.ProviderInstaller;
 
-import org.thoughtcrime.securesms.BuildConfig;
+import org.globalmeshlabs.securesms.BuildConfig;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.concurrent.SignalExecutors;
 import org.whispersystems.signalservice.api.SignalServiceAccountManager;

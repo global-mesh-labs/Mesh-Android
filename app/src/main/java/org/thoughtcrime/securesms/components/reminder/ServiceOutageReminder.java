@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.components.reminder;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 public class ServiceOutageReminder extends Reminder {

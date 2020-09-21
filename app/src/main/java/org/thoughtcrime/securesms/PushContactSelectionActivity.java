@@ -23,6 +23,7 @@ import com.annimon.stream.Stream;
 
 import org.thoughtcrime.securesms.contacts.SelectedContact;
 import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 
 public class ImageDivet extends AppCompatImageView {
   private static final float CORNER_OFFSET = 12F;

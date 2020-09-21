@@ -2,7 +2,7 @@ package org.thoughtcrime.securesms.lock;
 
 import androidx.annotation.StringRes;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.logging.Log;
 
 import java.util.HashMap;

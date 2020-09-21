@@ -92,6 +92,7 @@ import org.whispersystems.libsignal.fingerprint.FingerprintParsingException;
 import org.whispersystems.libsignal.fingerprint.FingerprintVersionMismatchException;
 import org.whispersystems.libsignal.fingerprint.NumericFingerprintGenerator;
 import org.whispersystems.signalservice.api.util.UuidUtil;
+import org.globalmeshlabs.securesms.R;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

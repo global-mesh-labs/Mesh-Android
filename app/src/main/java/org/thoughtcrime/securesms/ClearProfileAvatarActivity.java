@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 
+import org.globalmeshlabs.securesms.R;
+
 public class ClearProfileAvatarActivity extends Activity {
 
   @Override

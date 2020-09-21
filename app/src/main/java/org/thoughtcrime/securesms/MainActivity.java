@@ -15,6 +15,7 @@ import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.ArrayList;
 
