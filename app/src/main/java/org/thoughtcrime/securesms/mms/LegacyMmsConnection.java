@@ -231,13 +231,8 @@ public abstract class LegacyMmsConnection {
 
   @SuppressLint("HardwareIds")
   private static String getLine1Number(@NonNull Context context) {
-    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_SMS)           == PackageManager.PERMISSION_GRANTED ||
-        ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED ||
-        ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)   == PackageManager.PERMISSION_GRANTED) {
-      return TelephonyUtil.getManager(context).getLine1Number();
-    } else {
       return "";
-    }
+
   }
 
   public static class Apn {
