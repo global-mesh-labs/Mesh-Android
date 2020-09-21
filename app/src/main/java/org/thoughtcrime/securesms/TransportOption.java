@@ -14,7 +14,9 @@ public class TransportOption implements Parcelable {
 
   public enum Type {
     SMS,
-    TEXTSECURE
+    TEXTSECURE,
+    MESH,
+    SMS_GATEWAY
   }
 
   private final int                             drawable;
@@ -77,6 +79,18 @@ public class TransportOption implements Parcelable {
 
   public boolean isSms() {
     return type == Type.SMS;
+  }
+
+  public boolean isMesh() {
+    return type == Type.MESH;
+  }
+
+  public boolean isSMSGateway() {
+    return type == Type.SMS_GATEWAY;
+  }
+
+  public boolean isSignal() {
+    return type == Type.TEXTSECURE;
   }
 
   public CharacterState calculateCharacters(String messageBody) {

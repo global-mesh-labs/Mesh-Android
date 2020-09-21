@@ -243,7 +243,7 @@ public class Message
         return null;
     }
 
-    public static Message createMessageFromData(GTTextOnlyMessageData gtTextOnlyMessageData) {
+    public static SMSMessage createMessageFromData(GTTextOnlyMessageData gtTextOnlyMessageData) {
         String textPayload = gtTextOnlyMessageData.getText();
         long senderGID = gtTextOnlyMessageData.getSenderGID();
         if (gtTextOnlyMessageData.getSenderGID() == 555555555) {
@@ -254,9 +254,10 @@ public class Message
                 textPayload = parts[1];
             }
         }
-        return new Message(senderGID,
+        return new SMSMessage(senderGID,
                 gtTextOnlyMessageData.getRecipientGID(),
                 gtTextOnlyMessageData.getMessageSentDate(),
+                Long.toString(senderGID),
                 textPayload,
                 MessageStatus.SENT_SUCCESSFULLY,
                 "");

@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.util.SmsCharacterCalculator;
 import org.thoughtcrime.securesms.util.dualsim.SubscriptionInfoCompat;
 import org.thoughtcrime.securesms.util.dualsim.SubscriptionManagerCompat;
 import org.whispersystems.libsignal.util.guava.Optional;
+import org.globalmeshlabs.securesms.R;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,7 +52,7 @@ public class TransportOptions {
     if (selectedOption.isPresent() && !isEnabled(selectedOption.get())) {
       setSelectedTransport(null);
     } else {
-      this.defaultTransportType = Type.SMS;
+      this.defaultTransportType = Type.SMS_GATEWAY;
       this.defaultSubscriptionId = Optional.absent();
 
       notifyTransportChangeListeners();
@@ -116,6 +117,24 @@ public class TransportOptions {
 
   }
 
+  public static @NonNull TransportOption getMeshTransportOption(@NonNull Context context) {
+    return new TransportOption(Type.MESH,
+            R.drawable.ic_send_unlock_24,
+            context.getResources().getColor(R.color.core_grey_50),
+            context.getString(R.string.ConversationActivity_transport_mesh),
+            context.getString(R.string.conversation_activity__type_message_mesh),
+            new SmsCharacterCalculator());
+  }
+
+  public static @NonNull TransportOption getSMSGatewayTransportOption(@NonNull Context context) {
+    return new TransportOption(Type.SMS_GATEWAY,
+            R.drawable.ic_send_unlock_24,
+            context.getResources().getColor(R.color.core_grey_50),
+            context.getString(R.string.ConversationActivity_transport_sms_gateway),
+            context.getString(R.string.conversation_activity__type_message_sms_gateway),
+            new SmsCharacterCalculator());
+  }
+
   private @Nullable TransportOption findEnabledSmsTransportOption(Optional<Integer> subscriptionId) {
     if (subscriptionId.isPresent()) {
       final int subId = subscriptionId.get();
@@ -158,13 +177,16 @@ public class TransportOptions {
     List<TransportOption> results = new LinkedList<>();
 
     if (isMediaMessage) {
-      results.addAll(getTransportOptionsForSimCards(context.getString(R.string.ConversationActivity_transport_insecure_mms),
-                                                    context.getString(R.string.conversation_activity__type_message_mms_insecure),
-                                                    new MmsCharacterCalculator()));
+    //  results.addAll(getTransportOptionsForSimCards(context.getString(R.string.ConversationActivity_transport_insecure_mms),
+    //                                                context.getString(R.string.conversation_activity__type_message_mms_insecure),
+    //                                                new MmsCharacterCalculator()));
     } else {
-      results.addAll(getTransportOptionsForSimCards(context.getString(R.string.ConversationActivity_transport_insecure_sms),
-                                                    context.getString(R.string.conversation_activity__type_message_sms_insecure),
-                                                    new SmsCharacterCalculator()));
+    //  results.addAll(getTransportOptionsForSimCards(context.getString(R.string.ConversationActivity_transport_insecure_sms),
+    //                                                context.getString(R.string.conversation_activity__type_message_sms_insecure),
+    //                                                new SmsCharacterCalculator()));
+
+      results.add(getMeshTransportOption(context));
+      results.add(getSMSGatewayTransportOption(context));
     }
 
     results.add(getPushTransportOption(context));

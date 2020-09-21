@@ -73,7 +73,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     // Class Properties
     //==============================================================================================
 
-    private static final String GOTENNA_APP_TOKEN = "";// TODO: Insert your token
+    private static final String GOTENNA_APP_TOKEN = "FhkTSkINBkUDUhxEV10NBx5SRARHUlgDB0BcBlsDCA4QCgRKB0VDBV8IQg4XSERf";// TODO: Insert your token
     private static Context applicationContext;
     private static final String TAG = GTMeshManager.class.getSimpleName();
     private static final boolean WILL_ENCRYPT_MESSAGES = true; // Can optionally encrypt messages using SDK
@@ -99,10 +99,10 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
     private PendingIntent gtDeliveryIntent;
 
     // socks4/5 proxy server
-    SocksServer proxyServer = null;
+    //SocksServer proxyServer = null;
 
     // LND (test) mesh socket server
-    MeshSocketServer meshSocketServer = null;
+    //MeshSocketServer meshSocketServer = null;
 
     //==============================================================================================
     // Singleton Methods
@@ -155,7 +155,8 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
             e.printStackTrace();
         }
 
-        // forward traffic on port 1337 to the mesh Internet gateway
+        /*
+        // setups Socks proxy on port 8888
         try {
             // to create SOCKS server proxy to mesh gateway
             proxyServer = new SocksServer();
@@ -167,6 +168,7 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+        */
     }
 
     public void startListening()
@@ -382,8 +384,9 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
                                          String textMessage, PendingIntent sentIntent, PendingIntent deliveryIntent,
                                          boolean persistMessage) {
 
+        boolean isDirectMesh = false;
         if (TextUtils.isEmpty(destinationAddress)) {
-            throw new IllegalArgumentException("Invalid destinationAddress");
+            isDirectMesh = true;
         }
 
         if (TextUtils.isEmpty(textMessage)) {
@@ -393,10 +396,17 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
         // TODO: set willEncrypt to true
         final String localAddress = TextSecurePreferences.getLocalNumber(applicationContext);
         long senderGID = getGidFromPhoneNumber(localAddress);
-        long receiverGID = getGidFromPhoneNumber(destinationAddress);
+        long receiverGID = isDirectMesh ? getGidFromPhoneNumber(phoneNumber) : getGidFromPhoneNumber(destinationAddress);
 
         Date localDateTime = new Date();
-        SMSMessage gtMessage = new SMSMessage(senderGID, receiverGID, localDateTime, phoneNumber, textMessage, Message.MessageStatus.SENDING, "");
+
+        Message gtMessage;
+        if (isDirectMesh) {
+            gtMessage = new Message(senderGID, receiverGID, localDateTime, textMessage, Message.MessageStatus.SENDING, "");
+        }
+        else {
+            gtMessage = new SMSMessage(senderGID, receiverGID, localDateTime, phoneNumber, textMessage, Message.MessageStatus.SENDING, "");
+        }
 
         sendMessageInteractor.sendMessage(gtMessage, false,
                 new SendMessageInteractor.SendMessageListener()
@@ -432,7 +442,6 @@ public class GTMeshManager implements GTCommandCenter.GTMessageListener, GTComma
             throw new IllegalArgumentException("Invalid message body");
         }
 
-        // TODO: set willEncrypt to true
         final String localAddress = TextSecurePreferences.getLocalNumber(applicationContext);
         long senderGID = getGidFromPhoneNumber(localAddress);
         long receiverGID = getGidFromPhoneNumber(destinationAddress);

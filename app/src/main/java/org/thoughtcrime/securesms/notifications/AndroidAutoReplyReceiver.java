@@ -78,7 +78,7 @@ public class AndroidAutoReplyReceiver extends BroadcastReceiver {
             replyThreadId = MessageSender.send(context, reply, threadId, false, null);
           } else {
             Log.w("AndroidAutoReplyReceiver", "Sending regular message ");
-            OutgoingTextMessage reply = new OutgoingTextMessage(recipient, responseText.toString(), expiresIn, subscriptionId);
+            OutgoingTextMessage reply = new OutgoingTextMessage(recipient, responseText.toString(), expiresIn, subscriptionId, 0);
             replyThreadId = MessageSender.send(context, reply, threadId, false, null);
           }
 

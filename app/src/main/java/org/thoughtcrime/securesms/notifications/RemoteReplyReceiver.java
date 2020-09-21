@@ -86,7 +86,7 @@ public class RemoteReplyReceiver extends BroadcastReceiver {
               break;
             }
             case UnsecuredSmsMessage: {
-              OutgoingTextMessage reply = new OutgoingTextMessage(recipient, responseText.toString(), expiresIn, subscriptionId);
+              OutgoingTextMessage reply = new OutgoingTextMessage(recipient, responseText.toString(), expiresIn, subscriptionId, 0);
               threadId = MessageSender.send(context, reply, -1, true, null);
               break;
             }

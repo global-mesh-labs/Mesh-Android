@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.thoughtcrime.securesms.database.MmsSmsColumns.Types.isMesh;
+
 /**
  * Database for storage of SMS messages.
  *
@@ -721,7 +723,15 @@ public class SmsDatabase extends MessagingDatabase {
     if      (message.isKeyExchange())   type |= Types.KEY_EXCHANGE_BIT;
     else if (message.isSecureMessage()) type |= (Types.SECURE_MESSAGE_BIT | Types.PUSH_MESSAGE_BIT);
     else if (message.isEndSession())    type |= Types.END_SESSION_BIT;
-    if      (forceSms)                  type |= Types.MESSAGE_FORCE_SMS_BIT;
+    if      (forceSms) {
+                                        type |= Types.MESSAGE_FORCE_SMS_BIT;
+      if (Types.isMesh(message.getMessageType())) {
+                                        type |= Types.MESSAGE_MESH_BIT;
+      }
+      else if (Types.isGateway(message.getMessageType())) {
+                                        type |= Types.MESSAGE_GATEWAY_BIT;
+      }
+    }
 
     if      (message.isIdentityVerified()) type |= Types.KEY_EXCHANGE_IDENTITY_VERIFIED_BIT;
     else if (message.isIdentityDefault())  type |= Types.KEY_EXCHANGE_IDENTITY_DEFAULT_BIT;
@@ -924,7 +934,7 @@ public class SmsDatabase extends MessagingDatabase {
       return new SmsMessageRecord(id, message.getMessageBody(),
                                   message.getRecipient(), message.getRecipient(),
                                   1, System.currentTimeMillis(), System.currentTimeMillis(),
-                                  0, message.isSecureMessage() ? MmsSmsColumns.Types.getOutgoingEncryptedMessageType() : MmsSmsColumns.Types.getOutgoingSmsMessageType(),
+                                  0, message.getMessageType(),
                                   threadId, 0, new LinkedList<IdentityKeyMismatch>(),
                                   message.getSubscriptionId(), message.getExpiresIn(),
                                   System.currentTimeMillis(), 0, false, Collections.emptyList());

@@ -193,7 +193,6 @@
     <attr name="menu_multi_select_icon" format="reference" />
     <attr name="menu_archive_icon" format="reference" />
 
-    <attr name="ic_mesh_icon" format="reference" />
     <attr name="message_icon" format="reference" />
     <attr name="mesh_icon" format="reference" />
     <attr name="notifications_icon" format="reference" />

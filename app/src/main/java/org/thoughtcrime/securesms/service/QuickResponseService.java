@@ -51,7 +51,7 @@ public class QuickResponseService extends IntentService {
       long      expiresIn      = recipient.getExpireMessages() * 1000L;
 
       if (!TextUtils.isEmpty(content)) {
-        MessageSender.send(this, new OutgoingTextMessage(recipient, content, expiresIn, subscriptionId), -1, false, null);
+        MessageSender.send(this, new OutgoingTextMessage(recipient, content, expiresIn, subscriptionId, 0), -1, false, null);
       }
     } catch (URISyntaxException e) {
       Toast.makeText(this, R.string.QuickResponseService_problem_sending_message, Toast.LENGTH_LONG).show();

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 
+import org.thoughtcrime.securesms.database.MmsSmsColumns;
 import org.thoughtcrime.securesms.jobmanager.Data;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkOrCellServiceConstraint;
@@ -136,7 +137,10 @@ public class SmsSendJob extends SendJob {
     ArrayList<PendingIntent> sentIntents      = constructSentIntents(message.getId(), message.getType(), messages, false);
     ArrayList<PendingIntent> deliveredIntents = constructDeliveredIntents(message.getId(), message.getType(), messages);
 
-    if (GTMeshManager.getInstance().isPaired()) {
+    boolean isGateway = MmsSmsColumns.Types.isGateway(message.getType());
+    boolean isMesh = MmsSmsColumns.Types.isMesh(message.getType());
+
+    if (GTMeshManager.getInstance().isPaired() && (isGateway || isMesh)) {
       // send first message over the mesh
       // TODO: send all message parts, not just first one
       // TODO: handle delivery intent for mesh messages (create a new message.type?)
@@ -149,7 +153,7 @@ public class SmsSendJob extends SendJob {
 
       // Send to SMS gateway, but prepend message with external phone number
       // TODO: first try to send directly via mesh before sending to SMS gateway
-      final String gatewayGID = "555555555";
+      final String gatewayGID = isGateway ? "555555555" : "";
 
       GTMeshManager.getInstance().sendTextMessageInternal(gatewayGID, recipient, message.getBody(),
               sentIntents.get(0),

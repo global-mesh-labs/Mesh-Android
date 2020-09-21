@@ -21,7 +21,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import android.text.SpannableString;
 
-import org.thoughtcrime.securesms.R;
+import org.globalmeshlabs.securesms.R;
 import org.thoughtcrime.securesms.database.MmsSmsColumns;
 import org.thoughtcrime.securesms.database.SmsDatabase;
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatch;

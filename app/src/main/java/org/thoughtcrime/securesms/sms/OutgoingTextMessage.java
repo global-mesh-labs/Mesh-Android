@@ -1,5 +1,7 @@
 package org.thoughtcrime.securesms.sms;
 
+import org.thoughtcrime.securesms.TransportOption;
+import org.thoughtcrime.securesms.database.MmsSmsColumns;
 import org.thoughtcrime.securesms.database.model.SmsMessageRecord;
 import org.thoughtcrime.securesms.recipients.Recipient;
 
@@ -9,22 +11,25 @@ public class OutgoingTextMessage {
   private final String    message;
   private final int       subscriptionId;
   private final long      expiresIn;
+  private final long      messageType;
 
   public OutgoingTextMessage(Recipient recipient, String message, int subscriptionId) {
-    this(recipient, message, 0, subscriptionId);
+    this(recipient, message, 0, subscriptionId, MmsSmsColumns.Types.getOutgoingSmsMessageType());
   }
 
-  public OutgoingTextMessage(Recipient recipient, String message, long expiresIn, int subscriptionId) {
+  public OutgoingTextMessage(Recipient recipient, String message, long expiresIn, int subscriptionId, long messageType) {
     this.recipient      = recipient;
     this.message        = message;
     this.expiresIn      = expiresIn;
     this.subscriptionId = subscriptionId;
+    this.messageType    = messageType;
   }
 
   protected OutgoingTextMessage(OutgoingTextMessage base, String body) {
     this.recipient      = base.getRecipient();
     this.subscriptionId = base.getSubscriptionId();
     this.expiresIn      = base.getExpiresIn();
+    this.messageType  = base.getMessageType();
     this.message        = body;
   }
 
@@ -42,6 +47,10 @@ public class OutgoingTextMessage {
 
   public Recipient getRecipient() {
     return recipient;
+  }
+
+  public long getMessageType() {
+    return messageType;
   }
 
   public boolean isKeyExchange() {
@@ -74,9 +83,9 @@ public class OutgoingTextMessage {
     } else if (record.isKeyExchange()) {
       return new OutgoingKeyExchangeMessage(record.getRecipient(), record.getBody());
     } else if (record.isEndSession()) {
-      return new OutgoingEndSessionMessage(new OutgoingTextMessage(record.getRecipient(), record.getBody(), 0, -1));
+      return new OutgoingEndSessionMessage(new OutgoingTextMessage(record.getRecipient(), record.getBody(), 0, -1, record.getType()));
     } else {
-      return new OutgoingTextMessage(record.getRecipient(), record.getBody(), record.getExpiresIn(), record.getSubscriptionId());
+      return new OutgoingTextMessage(record.getRecipient(), record.getBody(), record.getExpiresIn(), record.getSubscriptionId(), record.getType());
     }
   }
 
