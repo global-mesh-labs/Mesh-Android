@@ -29,3 +29,6 @@ pkcs11.password
 gotenna-public-sdk/.venv/
 gotenna-public-sdk/.goTenna
 __pycache__
+app/play/release/
+app/website/release/
+app/website/staging/
