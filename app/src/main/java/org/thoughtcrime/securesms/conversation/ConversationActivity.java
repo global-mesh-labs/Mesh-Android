@@ -1310,7 +1310,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       sendButton.setDefaultTransport(Type.SMS);
     } else {
       if (isSecureText || isPushGroupConversation()) sendButton.setDefaultTransport(Type.TEXTSECURE);
-      else                                           sendButton.setDefaultTransport(Type.SMS);
+      else                                           sendButton.setDefaultTransport(Type.SMS_GATEWAY);
     }
 
     calculateCharactersRemaining();
@@ -2046,11 +2046,13 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       composePanel.setVisibility(View.GONE);
       makeDefaultSmsButton.setVisibility(View.GONE);
       registerButton.setVisibility(View.VISIBLE);
+      /*
     } else if (!isSecureText && !isDefaultSms) {
       unblockButton.setVisibility(View.GONE);
       composePanel.setVisibility(View.GONE);
       makeDefaultSmsButton.setVisibility(View.VISIBLE);
       registerButton.setVisibility(View.GONE);
+      */
     } else {
       composePanel.setVisibility(View.VISIBLE);
       unblockButton.setVisibility(View.GONE);
@@ -2238,6 +2240,9 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
                                        inputPanel.getQuote().isPresent()       ||
                                        linkPreviewViewModel.hasLinkPreview()   ||
                                        needsSplit;
+
+      // to always send messages with MESH or SMS_GATEWAY transport must set forceSMS to true
+      forceSms = true;
 
       Log.i(TAG, "isManual Selection: " + sendButton.isManualSelection());
       Log.i(TAG, "forceSms: " + forceSms);

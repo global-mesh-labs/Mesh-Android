@@ -14,11 +14,11 @@ import androidx.annotation.Nullable;
 public class DatabaseContentProviders {
 
   public static class ConversationList extends NoopContentProvider {
-    public static final Uri CONTENT_URI = Uri.parse("content://org.thoughtcrime.securesms.database.conversationlist");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.globalmeshlabs.securesms.database.conversationlist");
   }
 
   public static class Conversation extends NoopContentProvider {
-    private static final String CONTENT_URI_STRING = "content://org.thoughtcrime.securesms.database.conversation/";
+    private static final String CONTENT_URI_STRING = "content://org.globalmeshlabs.securesms.database.conversation/";
 
     public static Uri getUriForThread(long threadId) {
       return Uri.parse(CONTENT_URI_STRING + threadId);
@@ -26,15 +26,15 @@ public class DatabaseContentProviders {
   }
 
   public static class Attachment extends NoopContentProvider {
-    public static final Uri CONTENT_URI = Uri.parse("content://org.thoughtcrime.securesms.database.attachment");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.globalmeshlabs.securesms.database.attachment");
   }
 
   public static class Sticker extends NoopContentProvider {
-    public static final Uri CONTENT_URI = Uri.parse("content://org.thoughtcrime.securesms.database.sticker");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.globalmeshlabs.securesms.database.sticker");
   }
 
   public static class StickerPack extends NoopContentProvider {
-    public static final Uri CONTENT_URI = Uri.parse("content://org.thoughtcrime.securesms.database.stickerpack");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.globalmeshlabs.securesms.database.stickerpack");
   }
 
   private static abstract class NoopContentProvider extends ContentProvider {

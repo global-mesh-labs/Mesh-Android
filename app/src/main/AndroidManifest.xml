@@ -602,15 +602,15 @@
 <provider android:name="org.thoughtcrime.securesms.providers.PartProvider"
           android:grantUriPermissions="true"
           android:exported="false"
-          android:authorities="org.thoughtcrime.provider.securesms" />
+          android:authorities="org.globalmeshlabs.provider.securesms" />
 
 <provider android:name="org.thoughtcrime.securesms.providers.MmsBodyProvider"
           android:grantUriPermissions="true"
           android:exported="false"
-          android:authorities="org.thoughtcrime.provider.securesms.mms" />
+          android:authorities="org.globalmeshlabs.provider.securesms.mms" />
 
 <provider android:name="androidx.core.content.FileProvider"
-          android:authorities="org.thoughtcrime.securesms.fileprovider"
+          android:authorities="org.globalmeshlabs.securesms.fileprovider"
           android:exported="false"
           android:grantUriPermissions="true">
 
@@ -619,23 +619,23 @@
 </provider>
 
 <provider android:name="org.thoughtcrime.securesms.database.DatabaseContentProviders$Conversation"
-          android:authorities="org.thoughtcrime.securesms.database.conversation"
+          android:authorities="org.globalmeshlabs.securesms.database.conversation"
           android:exported="false" />
 
 <provider android:name="org.thoughtcrime.securesms.database.DatabaseContentProviders$ConversationList"
-          android:authorities="org.thoughtcrime.securesms.database.conversationlist"
+          android:authorities="org.globalmeshlabs.securesms.database.conversationlist"
           android:exported="false" />
 
 <provider android:name="org.thoughtcrime.securesms.database.DatabaseContentProviders$Attachment"
-          android:authorities="org.thoughtcrime.securesms.database.attachment"
+          android:authorities="org.globalmeshlabs.securesms.database.attachment"
           android:exported="false" />
 
 <provider android:name="org.thoughtcrime.securesms.database.DatabaseContentProviders$Sticker"
-          android:authorities="org.thoughtcrime.securesms.database.sticker"
+          android:authorities="org.globalmeshlabs.securesms.database.sticker"
           android:exported="false" />
 
 <provider android:name="org.thoughtcrime.securesms.database.DatabaseContentProviders$StickerPack"
-          android:authorities="org.thoughtcrime.securesms.database.stickerpack"
+          android:authorities="org.globalmeshlabs.securesms.database.stickerpack"
           android:exported="false" />
 
 <receiver android:name="org.thoughtcrime.securesms.service.BootReceiver">
